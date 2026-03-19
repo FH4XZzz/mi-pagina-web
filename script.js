@@ -1408,15 +1408,8 @@ function initIOSGuide() {
     const fechaInput = document.getElementById('fecha');
     if (fechaInput) {
         fechaInput.setAttribute('type', 'text');
-        fechaInput.setAttribute('readonly', 'true');
-        fechaInput.setAttribute('inputmode', 'none');
-        
-        // Simplemente aseguramos que al hacer clic se abra
-        fechaInput.addEventListener('click', function(e) {
-            if (this._flatpickr) {
-                this._flatpickr.open();
-            }
-        });
+        // Eliminamos el readonly manual aquí porque Flatpickr lo gestionará con allowInput: false
+        // También eliminamos los event listeners manuales que pueden estar bloqueando el burbujeo del evento
     }
 
     if (isIOS && !isStandalone) {
