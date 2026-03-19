@@ -1411,20 +1411,8 @@ function initIOSGuide() {
         fechaInput.setAttribute('readonly', 'true');
         fechaInput.setAttribute('inputmode', 'none');
         
-        // Bloqueo total de foco para evitar teclado
-        const bloquearFoco = (e) => {
-            e.preventDefault();
-            fechaInput.blur();
-            if (fechaInput._flatpickr) fechaInput._flatpickr.open();
-        };
-
-        fechaInput.addEventListener('focus', bloquearFoco);
-        fechaInput.addEventListener('mousedown', bloquearFoco);
-        fechaInput.addEventListener('touchstart', bloquearFoco);
-        
-        // Abrir Flatpickr al tocar
+        // Simplemente aseguramos que al hacer clic se abra
         fechaInput.addEventListener('click', function(e) {
-            e.preventDefault();
             if (this._flatpickr) {
                 this._flatpickr.open();
             }
