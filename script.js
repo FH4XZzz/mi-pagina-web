@@ -1391,10 +1391,16 @@ function initIOSGuide() {
     const fechaInput = document.getElementById('fecha');
     if (fechaInput) {
         fechaInput.setAttribute('type', 'text');
-        fechaInput.setAttribute('readonly', 'readonly');
+        fechaInput.setAttribute('readonly', 'true');
         fechaInput.setAttribute('inputmode', 'none');
         
-        // Abrir Flatpickr al tocar el contenedor o el input
+        // Evitar el foco real para que no aparezca el teclado en ningún navegador
+        fechaInput.addEventListener('focus', function(e) {
+            e.preventDefault();
+            this.blur();
+        });
+
+        // Abrir Flatpickr al tocar
         fechaInput.addEventListener('click', function(e) {
             e.preventDefault();
             if (this._flatpickr) {
