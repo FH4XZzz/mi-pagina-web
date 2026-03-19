@@ -1120,12 +1120,11 @@ function mostrarConfirmacion(form) {
     
     // Enviar mensaje a WhatsApp avisando que es una SOLICITUD PENDIENTE
     const mensajeWA = construirMensajeWhatsApp(reserva);
-    const urlWA = `https://wa.me/18297694405?text=${encodeURIComponent(mensajeWA)}`;
+    // Cambiar a la URL universal de WhatsApp para mejor compatibilidad en iPhone
+    const urlWA = `https://api.whatsapp.com/send?phone=18297694405&text=${encodeURIComponent(mensajeWA)}`;
     
-    // Abrir WhatsApp después de un breve retraso
-    setTimeout(() => {
-        window.open(urlWA, '_blank');
-    }, 1500);
+    // Intentar abrir WhatsApp inmediatamente
+    window.location.href = urlWA;
 
     // Log de datos (solo en modo debug)
     if (DEBUG_MODE) {
@@ -1340,6 +1339,17 @@ function initIOSGuide() {
     // Solo mostrar si es un dispositivo iOS y NO está ya en modo standalone (instalado)
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+    // Desactivar el selector nativo de iOS para que Flatpickr funcione correctamente
+    const fechaInput = document.getElementById('fecha');
+    if (fechaInput) {
+        fechaInput.setAttribute('type', 'text');
+        fechaInput.setAttribute('readonly', 'readonly');
+        // Asegurar que Flatpickr se reinicialice si es necesario
+        if (typeof fp !== 'undefined') {
+            fp.set('clickOpens', true);
+        }
+    }
 
     if (isIOS && !isStandalone) {
         // Mostrar la guía después de 3 segundos
