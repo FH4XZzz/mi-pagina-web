@@ -8,7 +8,16 @@
 
 const SUPABASE_URL = 'https://yhEirw7Jx5ZJq9dBGdB41Q.supabase.co'; 
 const SUPABASE_KEY = 'sb_publishable_yhEirw7Jx5ZJq9dBGdB41Q_toasJwEx';
-const supabase = (typeof window.supabase !== 'undefined') ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+let supabaseClient = null;
+
+// Inicializar Supabase de forma segura
+if (typeof window.supabase !== 'undefined') {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+        auth: {
+            persistSession: false // Evita problemas con el storage/Tracking Prevention
+        }
+    });
+}
 
 // Modo de desarrollo (cambiar a false en producción)
 const DEBUG_MODE = false; // MANTENER EN FALSE PARA PRODUCCIÓN
@@ -1104,8 +1113,8 @@ function mostrarConfirmacion(form) {
     SISTEMA_DISPONIBILIDAD.agregarReserva(fechaISO, hora, nombre);
     
     // 3. Guardar en Supabase (Base de datos real)
-    if (supabase) {
-        supabase.from('reservas').insert([
+    if (supabaseClient) {
+        supabaseClient.from('reservas').insert([
             {
                 nombre: reserva.nombre,
                 email: reserva.email,
@@ -1412,8 +1421,8 @@ async function cargarSolicitudesAdmin() {
     
     let solicitudes = [];
     
-    if (supabase) {
-        const { data, error } = await supabase
+    if (supabaseClient) {
+        const { data, error } = await supabaseClient
             .from('reservas')
             .select('*')
             .order('created_at', { ascending: false });
