@@ -1,0 +1,74 @@
+/* Font Awesome Icons - Versión Local Simplificada para OG BEAT PRODUCTION */
+
+/* Iconos esenciales para el proyecto */
+.fa, .fas, .far, .fab {
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+}
+
+/* Iconos de música y producción */
+.fa-compact-disc:before { content: "💿"; }
+.fa-microphone:before { content: "🎤"; }
+.fa-music:before { content: "🎵"; }
+.fa-headphones:before { content: "🎧"; }
+.fa-volume-up:before { content: "🔊"; }
+.fa-play:before { content: "▶️"; }
+.fa-pause:before { content: "⏸️"; }
+.fa-stop:before { content: "⏹️"; }
+.fa-forward:before { content: "⏩"; }
+.fa-backward:before { content: "⏪"; }
+.fa-sliders-h:before { content: "🎛️"; }
+.fa-sliders:before { content: "🎛️"; }
+.fa-mixer:before { content: "🎛️"; }
+.fa-equalizer:before { content: "📊"; }
+
+/* Iconos de redes sociales */
+.fa-instagram:before { content: "📷"; }
+.fa-youtube:before { content: "📺"; }
+.fa-tiktok:before { content: "🎵"; }
+.fa-spotify:before { content: "🎶"; }
+
+/* Iconos de comunicación */
+.fa-whatsapp:before { content: "💬"; }
+.fa-phone:before { content: "📞"; }
+.fa-envelope:before { content: "✉️"; }
+.fa-map-marker-alt:before { content: "📍"; }
+.fa-map-marker:before { content: "📍"; }
+.fa-location:before { content: "📍"; }
+
+/* Iconos de navegación */
+.fa-bars:before { content: "☰"; }
+.fa-times:before { content: "✖"; }
+.fa-chevron-left:before { content: "‹"; }
+.fa-chevron-right:before { content: "›"; }
+.fa-chevron-up:before { content: "↑"; }
+.fa-chevron-down:before { content: "↓"; }
+
+/* Iconos de información */
+.fa-info-circle:before { content: "ℹ️"; }
+.fa-check-circle:before { content: "✅"; }
+.fa-exclamation-circle:before { content: "⚠️"; }
+.fa-heart:before { content: "❤️"; }
+
+/* Iconos de servicios */
+.fa-clock:before { content: "🕒"; }
+.fa-calendar:before { content: "📅"; }
+.fa-users:before { content: "👥"; }
+.fa-star:before { content: "⭐"; }
+.fa-cog:before { content: "⚙️"; }
+
+/* Estilos base para iconos */
+.fas {
+    font-family: 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif;
+    font-size: 1em;
+}
+
+/* Tamaños específicos */
+.fa-lg { font-size: 1.33333em; }
+.fa-2x { font-size: 2em; }
+.fa-3x { font-size: 3em; }
+.fa-4x { font-size: 4em; }
+.fa-5x { font-size: 5em; }

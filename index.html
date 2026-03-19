@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="OG BEAT PRODUCTION - Donde tu sonido se convierte en éxito. Estudio de producción musical profesional">
+    <meta name="keywords" content="producción musical, grabación, mezcla, masterización, beats, estudio de música">
+    <title>OG BEAT PRODUCTION | Estudio de Grabación</title>
+
+    <!-- PWA & iOS Optimization -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="OG BEATS">
+    <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0a0e27">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23000'/%3E%3Ccircle cx='50' cy='50' r='40' fill='%23FFD700'/%3E%3Ccircle cx='50' cy='50' r='30' fill='%23000'/%3E%3C/svg%3E">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Local (Fallback para Tracking Prevention) -->
+    <link rel="stylesheet" href="font-awesome-local.css">
+    
+    <!-- Flatpickr Local (Fallback para Tracking Prevention) -->
+    <link rel="stylesheet" href="flatpickr-local.css">
+    
+    <!-- CSS personalizado -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-compact-disc"></i>
+                <span>OG BEAT</span>
+            </div>
+            <button class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#inicio" class="nav-link">Inicio</a></li>
+                <li><a href="#servicios" class="nav-link">Servicios</a></li>
+                <li><a href="#sobre-nosotros" class="nav-link">Sobre Nosotros</a></li>
+                <li><a href="#galeria" class="nav-link">Galería</a></li>
+                <li><a href="#reserva" class="nav-link">Reserva</a></li>
+                <li><a href="#contacto" class="nav-link">Contacto</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">OG BEAT PRODUCTION</h1>
+                <p class="hero-subtitle">Donde tu sonido se convierte en éxito</p>
+                <div class="hero-buttons">
+                    <a href="#reserva" class="btn btn-primary btn-glow">Reservar Cita</a>
+                    <a href="#sobre-nosotros" class="btn btn-secondary">Conoce Más</a>
+                </div>
+            </div>
+            <div class="hero-graphic">
+                <div class="audio-wave">
+                    <div class="wave"></div>
+                    <div class="wave"></div>
+                    <div class="wave"></div>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span>Desplázate</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+
+    <!-- Servicios Section -->
+    <section id="servicios" class="servicios">
+        <div class="container">
+            <h2 class="section-title">Nuestros Servicios</h2>
+            <p class="section-subtitle">Soluciones profesionales para tu producción musical</p>
+            
+            <div class="servicios-grid">
+                <!-- Servicio 1: Grabación -->
+                <div class="servicio-card">
+                    <div class="servicio-icon">
+                        <i class="fas fa-microphone"></i>
+                    </div>
+                    <h3>Grabación Profesional</h3>
+                    <p>Equipamiento de última generación para capturar tu voz y tus instrumentos con la mejor calidad de audio. Nuestros técnicos certificados garantizan grabaciones impecables.</p>
+                    <ul class="servicio-features">
+                        <li><i class="fas fa-check"></i> Micrófonos profesionales</li>
+                        <li><i class="fas fa-check"></i> Sala acústica tratada</li>
+                        <li><i class="fas fa-check"></i> Técnico especializado</li>
+                    </ul>
+                </div>
+
+                <!-- Servicio 2: Mezcla y Masterización -->
+                <div class="servicio-card">
+                    <div class="servicio-icon">
+                        <i class="fas fa-sliders-h"></i>
+                    </div>
+                    <h3>Mezcla y Masterización</h3>
+                    <p>Transformamos tus grabaciones en tracks profesionales listos para distribuir. Usamos plugins de la mejor calidad y oídos entrenados para el resultado perfecto.</p>
+                    <ul class="servicio-features">
+                        <li><i class="fas fa-check"></i> Mezcla estéreo</li>
+                        <li><i class="fas fa-check"></i> Masterización profesional</li>
+                        <li><i class="fas fa-check"></i> Optimización por plataforma</li>
+                    </ul>
+                </div>
+
+                <!-- Servicio 3: Producción de Beats -->
+                <div class="servicio-card">
+                    <div class="servicio-icon">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <h3>Producción de Beats</h3>
+                    <p>Creamos beats originales y personalizados adaptados a tu estilo musical. Desde trap hasta reggaeton, contamos con productores especializados en cada género.</p>
+                    <ul class="servicio-features">
+                        <li><i class="fas fa-check"></i> Beats personalizados</li>
+                        <li><i class="fas fa-check"></i> Múltiples géneros</li>
+                        <li><i class="fas fa-check"></i> Licencias incluidas</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sobre Nosotros Section -->
+    <section id="sobre-nosotros" class="sobre-nosotros">
+        <div class="container">
+            <div class="sobre-content">
+                <div class="sobre-text">
+                    <h2 class="section-title">Sobre Nosotros</h2>
+                    <p>OG BEAT PRODUCTION es mi estudio personal de producción musical. Soy un productor independiente apasionado por la música urbana, con 2 años de experiencia creando beats y ayudando a artistas locales a encontrar su sonido.</p>
+                    
+                    <div class="stats">
+                        <div class="stat-item">
+                            <h3>25+</h3>
+                            <p>Artistas producidos</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>50+</h3>
+                            <p>Beats creados</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>2</h3>
+                            <p>Años de experiencia</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>100%</h3>
+                            <p>Dedicación</p>
+                        </div>
+                    </div>
+
+                    <p>Como productor independiente, me especializo en géneros urbanos como dembow, trap y reggaeton. Trabajo con equipamiento profesional de calidad y me mantengo actualizado con las últimas tendencias de producción para entregarte el mejor sonido posible.</p>
+                </div>
+                <div class="sobre-image">
+                    <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=600&h=400&fit=crop&crop=center&auto=format" alt="FL Studio DAW con pantalla de producción musical">
+                    <div class="gradient-box"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Galería / Portafolio Section -->
+    <section id="galeria" class="galeria">
+        <div class="container">
+            <h2 class="section-title">Nuestro Portafolio</h2>
+            <p class="section-subtitle">Algunos de nuestros trabajos más destacados</p>
+            
+            <div class="galeria-grid">
+                <div class="galeria-item">
+                    <div class="galeria-overlay">
+                        <div class="galeria-info">
+                            <h3>Producción Dembow</h3>
+                            <p>Ritmos pegajosos con la máxima calidad de estudio</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="galeria-item">
+                    <div class="galeria-overlay">
+                        <div class="galeria-info">
+                            <h3>Grabación Vocal</h3>
+                            <p>Sesiones de grabación con producción incluida</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="galeria-item">
+                    <div class="galeria-overlay">
+                        <div class="galeria-info">
+                            <h3>Masterización</h3>
+                            <p>Optimización de tracks para todas las plataformas</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="galeria-item">
+                    <div class="galeria-overlay">
+                        <div class="galeria-info">
+                            <h3>Producción Reggaeton</h3>
+                            <p>Beats y mezcla para proyectos urbanos</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="galeria-item">
+                    <div class="galeria-overlay">
+                        <div class="galeria-info">
+                            <h3>Arreglos Musicales</h3>
+                            <p>Composición y arreglos profesionales</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="galeria-item">
+                    <div class="galeria-overlay">
+                        <div class="galeria-info">
+                            <h3>Edición de Audio</h3>
+                            <p>Post-producción y edición profesional</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="galeria-item">
+                    <div class="galeria-overlay">
+                        <div class="galeria-info">
+                            <h3>Producción Trap</h3>
+                            <p>Beats modernos con sonidos actuales</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="galeria-item">
+                    <div class="galeria-overlay">
+                        <div class="galeria-info">
+                            <h3>Mixing en Vivo</h3>
+                            <p>Sesiones de mezcla en tiempo real</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="galeria-item">
+                    <div class="galeria-overlay">
+                        <div class="galeria-info">
+                            <h3>Producción Detroit</h3>
+                            <p>Beats Detroit con 808s pesados, bounce y melodías oscuras</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="galeria-item">
+                    <div class="galeria-overlay">
+                        <div class="galeria-info">
+                            <h3>Estudio Profesional</h3>
+                            <p>Equipamiento de última generación</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="galeria-item">
+                    <div class="galeria-overlay">
+                        <div class="galeria-info">
+                            <h3>Colaboraciones</h3>
+                            <p>Trabajos con artistas reconocidos</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="galeria-item">
+                    <div class="galeria-overlay">
+                        <div class="galeria-info">
+                            <h3>Producción Electro</h3>
+                            <p>Sonidos electrónicos y sintetizadores</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reserva de Citas Section -->
+    <section id="reserva" class="reserva">
+        <div class="container">
+            <h2 class="section-title">Reserva Tu Cita</h2>
+            <p class="section-subtitle">Completa el formulario y nos pondremos en contacto pronto</p>
+            
+            <div class="reserva-container">
+                <form id="formReserva" class="formulario-reserva" novalidate>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nombre">Nombre Completo *</label>
+                            <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
+                            <span class="error-message" id="errorNombre"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Correo Electrónico</label>
+                            <input type="email" id="email" name="email" placeholder="tu@correo.com">
+                            <span class="error-message" id="errorEmail"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="telefono">Teléfono/WhatsApp *</label>
+                            <input type="tel" id="telefono" name="telefono" placeholder="+1 234 567 8900" required>
+                            <span class="error-message" id="errorTelefono"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="servicio">Tipo de Servicio *</label>
+                            <select id="servicio" name="servicio" required>
+                                <option value="">Selecciona un servicio</option>
+                                <option value="grabacion">Grabación Profesional</option>
+                                <option value="mezcla">Mezcla y Masterización</option>
+                                <option value="beats">Producción de Beats</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                            <span class="error-message" id="errorServicio"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fecha">Fecha Preferida *</label>
+                            <input type="text" id="fecha" name="fecha" placeholder="Haz clic para seleccionar una fecha" required>
+                            <span class="error-message" id="errorFecha"></span>
+                            <small class="info-text">Disponible desde mañana en adelante</small>
+                            
+                            <!-- Leyenda de disponibilidad -->
+                            <div class="disponibilidad-leyenda">
+                                <div class="leyenda-item leyenda-disponible">
+                                    <div class="leyenda-color"></div>
+                                    <span>Disponible</span>
+                                </div>
+                                <div class="leyenda-item leyenda-ocupado">
+                                    <div class="leyenda-color"></div>
+                                    <span>Ocupado</span>
+                                </div>
+                                <div class="leyenda-item leyenda-seleccionado">
+                                    <div class="leyenda-color"></div>
+                                    <span>Seleccionado</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hora">Hora Preferida *</label>
+                            <select id="hora" name="hora" required>
+                                <option value="">Selecciona una hora</option>
+                                <option value="08:00">8:00 AM</option>
+                                <option value="09:00">9:00 AM</option>
+                                <option value="10:00">10:00 AM</option>
+                                <option value="11:00">11:00 AM</option>
+                                <option value="12:00">12:00 PM</option>
+                                <option value="13:00">1:00 PM</option>
+                                <option value="14:00">2:00 PM</option>
+                                <option value="15:00">3:00 PM</option>
+                                <option value="16:00">4:00 PM</option>
+                                <option value="17:00">5:00 PM</option>
+                                <option value="18:00">6:00 PM</option>
+                                <option value="19:00">7:00 PM</option>
+                                <option value="20:00">8:00 PM</option>
+                                <option value="21:00">9:00 PM</option>
+                            </select>
+                            <span class="error-message" id="errorHora"></span>
+                            <small class="info-text">⏰ Los horarios se actualizan según el día seleccionado</small>
+                        </div>
+                    </div>
+
+                    <!-- Información de disponibilidad -->
+                    <div class="info-disponibilidad success">
+                        <strong>💡 Información de Horarios (Cada 2 horas):</strong><br>
+                        <i class="fas fa-calendar-day" style="color: #00FF88;"></i> <strong>Lunes - Viernes:</strong> 8:00 AM, 10:00 AM, 12:00 PM, 2:00 PM, 4:00 PM, 6:00 PM, 8:00 PM<br>
+                        <i class="fas fa-calendar-alt" style="color: #00FF88;"></i> <strong>Sábado - Domingo:</strong> 10:00 AM, 12:00 PM, 2:00 PM, 4:00 PM, 6:00 PM, 8:00 PM
+                    </div>
+
+                    <div class="form-group">
+                        <label for="comentarios">Comentarios Adicionales</label>
+                        <textarea id="comentarios" name="comentarios" placeholder="Cuéntanos sobre tu proyecto..." rows="5"></textarea>
+                    </div>
+
+                    <div class="form-checkbox">
+                        <input type="checkbox" id="terminos" name="terminos" required>
+                        <label for="terminos">Acepto los términos y condiciones*</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-glow btn-large">Confirmar Reserva</button>
+                </form>
+
+                <!-- Mensaje de confirmación -->
+                <div id="confirmacionMensaje" class="confirmacion-mensaje" style="display: none;">
+                    <div class="confirmacion-content">
+                        <i class="fas fa-clock" style="color: var(--color-primary);"></i>
+                        <h3>Solicitud Recibida</h3>
+                        <p>Tu solicitud de cita ha sido enviada correctamente y está <strong>pendiente de aprobación</strong>.</p>
+                        <p>El equipo del estudio revisará tu solicitud y te confirmará vía WhatsApp.</p>
+                        <hr style="border: 0; border-top: 1px solid var(--color-border); margin: 20px 0;">
+                        <p>Correo (opcional): <span id="emailConfirmado"></span></p>
+                        <p>WhatsApp de contacto: <span id="telefonoConfirmado"></span></p>
+                        <button type="button" class="btn btn-secondary" onclick="location.reload()">Hacer otra solicitud</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contacto Section -->
+    <section id="contacto" class="contacto">
+        <div class="container">
+            <h2 class="section-title">Contacto</h2>
+            <p class="section-subtitle">Conecta con nosotros</p>
+            
+            <div class="contacto-grid">
+                <div class="contacto-item">
+                    <a href="https://www.google.com/maps/place/19.343367,-70.936102" target="_blank" style="text-decoration: none; color: inherit; display: block; width: 100%; height: 100%; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.querySelector('.contacto-icon').style.background='linear-gradient(135deg, var(--color-secondary), var(--color-primary))';" onmouseout="this.style.transform='translateY(0)'; this.querySelector('.contacto-icon').style.background='linear-gradient(135deg, var(--color-primary), var(--color-secondary))';">
+                        <div class="contacto-icon" style="transition: all 0.3s ease;">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <h3>Ubicación</h3>
+                        <p>
+                            Santiago, San Jose Las Matas<br>
+                            Calle Duarte<br>
+                            <small style="color: var(--color-text-secondary);">📍 Haz clic para ver en GPS</small>
+                        </p>
+                    </a>
+                </div>
+
+                <div class="contacto-item">
+                    <a href="https://wa.me/18297694405?text=Hola+OG+BEAT+PRODUCTION,+quiero+informaci%C3%B3n+sobre+sus+servicios" target="_blank" style="text-decoration: none; color: inherit; display: block; width: 100%; height: 100%; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.querySelector('.contacto-icon').style.background='linear-gradient(135deg, #25D366, #128C7E)';" onmouseout="this.style.transform='translateY(0)'; this.querySelector('.contacto-icon').style.background='linear-gradient(135deg, var(--color-primary), var(--color-secondary))';">
+                        <div class="contacto-icon" style="transition: all 0.3s ease;">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <h3>Teléfono</h3>
+                        <p>
+                            +1 (829) 769-4405<br>
+                            <small style="color: var(--color-text-secondary);">💬 Haz clic para WhatsApp</small>
+                        </p>
+                    </a>
+                </div>
+
+                <div class="contacto-item">
+                    <a href="mailto:ogbeatproduction@gmail.com?subject=Consulta%20OG%20BEAT%20PRODUCTION&body=Hola%2C%20quisiera%20informaci%C3%B3n%20sobre%20sus%20servicios%20musicales" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit; display: block; width: 100%; height: 100%; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.querySelector('.contacto-icon').style.background='linear-gradient(135deg, #EA4335, #D93025)';" onmouseout="this.style.transform='translateY(0)'; this.querySelector('.contacto-icon').style.background='linear-gradient(135deg, var(--color-primary), var(--color-secondary))';">
+                        <div class="contacto-icon" style="transition: all 0.3s ease;">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h3>Email</h3>
+                        <p>
+                            ogbeatproduction@gmail.com<br>
+                            <small style="color: var(--color-text-secondary);">✉️ Haz clic para enviar correo</small>
+                        </p>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Redes Sociales -->
+            <div class="redes-sociales">
+                <h3>Síguenos en Redes Sociales</h3>
+                <div class="redes-container">
+                    <a href="https://www.instagram.com" target="_blank" class="red-social instagram" title="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.youtube.com" target="_blank" class="red-social youtube" title="YouTube">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                    <a href="https://www.tiktok.com" target="_blank" class="red-social tiktok" title="TikTok">
+                        <i class="fab fa-tiktok"></i>
+                    </a>
+                    <a href="https://www.spotify.com" target="_blank" class="red-social spotify" title="Spotify">
+                        <i class="fab fa-spotify"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Botón Flotante de WhatsApp -->
+    <a href="https://wa.me/18297694405" target="_blank" class="whatsapp-button" title="Contáctanos por WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- Administración de Citas (Oculto por defecto) -->
+    <section id="admin-citas" style="display: none; padding: 100px 0; background: var(--color-bg);">
+        <div class="container">
+            <h2 class="section-title">Panel de Administración</h2>
+            <div id="admin-login" style="max-width: 400px; margin: 0 auto; text-align: center; background: var(--color-bg-secondary); padding: 30px; border-radius: 15px; border: 1px solid var(--color-primary);">
+                <h3>Acceso Restringido</h3>
+                <input type="password" id="admin-pass" placeholder="Contraseña" style="width: 100%; padding: 12px; margin: 20px 0; background: var(--color-bg); border: 1px solid var(--color-border); color: white; border-radius: 8px;">
+                <button onclick="loginAdmin()" class="btn btn-primary" style="width: 100%;">Entrar</button>
+            </div>
+            <div id="admin-panel" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                    <h3>Solicitudes Pendientes</h3>
+                    <button onclick="logoutAdmin()" class="btn btn-secondary" style="padding: 8px 20px; font-size: 12px;">Cerrar Sesión</button>
+                </div>
+                <div id="lista-solicitudes" class="contacto-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+                    <!-- Las solicitudes se cargarán aquí dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2026 OG BEAT PRODUCTION. Todos los derechos reservados.</p>
+                <p>Diseñado con <i class="fas fa-heart" id="admin-trigger" onclick="abrirAdmin()" style="cursor: pointer; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></i> para artistas apasionados</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Guía de Instalación para iPhone (PWA) -->
+    <div id="ios-pwa-guide" class="ios-guide" style="display: none;">
+        <div class="ios-guide-content">
+            <button class="close-guide" onclick="this.parentElement.parentElement.style.display='none'">&times;</button>
+            <div class="ios-guide-header">
+                <i class="fas fa-mobile-alt"></i>
+                <h3>Instalar en tu iPhone</h3>
+            </div>
+            <p>Para usar esta página como una aplicación:</p>
+            <ol>
+                <li>Toca el botón <strong>Compartir</strong> <i class="fas fa-share-square" style="color: #007aff;"></i> en la barra inferior de Safari.</li>
+                <li>Desliza hacia abajo y selecciona <strong>"Agregar a Inicio"</strong> <i class="fas fa-plus-square"></i>.</li>
+                <li>Toca <strong>"Agregar"</strong> en la esquina superior derecha.</li>
+            </ol>
+            <div class="ios-guide-footer">
+                <p>¡Listo! Tendrás acceso directo desde tu pantalla de inicio.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <!-- Flatpickr Local (Fallback para Tracking Prevention) -->
+    <script src="flatpickr-local.js"></script>
+    <!-- Si falla el local, intentar con CDN -->
+    <script>
+        if (!window.flatpickr) {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/flatpickr';
+            script.crossorigin = 'anonymous';
+            script.onload = function() {
+                const localeScript = document.createElement('script');
+                localeScript.src = 'https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js';
+                localeScript.crossorigin = 'anonymous';
+                document.head.appendChild(localeScript);
+            };
+            document.head.appendChild(script);
+        }
+    </script>
+    
+    <!-- Font Awesome CDN Fallback -->
+    <script>
+        // Si los iconos no se cargan, intentar con CDN
+        setTimeout(() => {
+            const testIcon = document.querySelector('.fa-compact-disc');
+            if (testIcon && getComputedStyle(testIcon).content === 'none') {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+                link.crossorigin = 'anonymous';
+                document.head.appendChild(link);
+            }
+        }, 1000);
+    </script>
+    
+    <script src="script.js"></script>
+</body>
+</html>

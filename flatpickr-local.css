@@ -1,0 +1,188 @@
+/* Flatpickr - Versión Local Simplificada para OG BEAT PRODUCTION */
+
+/* Calendario básico con estilos personalizados */
+.flatpickr-calendar {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    font-family: var(--font-primary);
+    font-size: 14px;
+    color: var(--color-text);
+    width: 300px;
+    padding: 15px;
+    margin: 0;
+}
+
+/* Header del calendario */
+.flatpickr-months {
+    background: transparent;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 10px;
+}
+
+.flatpickr-month {
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: 16px;
+    text-align: center;
+}
+
+/* Navegación del calendario */
+.flatpickr-next-month,
+.flatpickr-prev-month {
+    color: var(--color-text);
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all var(--transition-base);
+    cursor: pointer;
+    background: rgba(255, 215, 0, 0.1);
+    border: 1px solid var(--color-primary);
+}
+
+.flatpickr-next-month:hover,
+.flatpickr-prev-month:hover {
+    background: var(--color-primary);
+    color: #000;
+    transform: scale(1.05);
+}
+
+/* Días de la semana */
+.flatpickr-weekdays {
+    background: transparent;
+    margin-bottom: 8px;
+}
+
+.flatpickr-weekday {
+    color: var(--color-text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 5px;
+}
+
+/* Días del mes */
+.flatpickr-days {
+    background: transparent;
+}
+
+.flatpickr-day {
+    background: var(--color-bg-tertiary);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    width: 35px;
+    height: 35px;
+    margin: 2px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    font-weight: 500;
+}
+
+/* Estados de los días */
+.flatpickr-day:hover {
+    background: rgba(255, 215, 0, 0.2);
+    border-color: var(--color-primary);
+    transform: scale(1.1);
+}
+
+.flatpickr-day.today {
+    background: rgba(0, 255, 136, 0.2);
+    border-color: var(--color-secondary);
+    color: var(--color-secondary);
+    font-weight: 700;
+}
+
+.flatpickr-day.selected {
+    background: var(--color-primary) !important;
+    color: #000 !important;
+    border-color: var(--color-primary) !important;
+    font-weight: 700;
+    transform: scale(1.05);
+}
+
+/* Días disponibles */
+.flatpickr-day.dia-disponible {
+    background: rgba(0, 255, 136, 0.1);
+    border-color: var(--color-secondary);
+    color: var(--color-secondary);
+}
+
+.flatpickr-day.dia-disponible:hover {
+    background: var(--color-secondary);
+    color: #000;
+}
+
+/* Días ocupados */
+.flatpickr-day.dia-ocupado {
+    background: rgba(255, 68, 68, 0.1);
+    border-color: #ff4444;
+    color: #ff4444;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.flatpickr-day.dia-ocupado:hover {
+    background: rgba(255, 68, 68, 0.2);
+    transform: none;
+}
+
+/* Días deshabilitados */
+.flatpickr-day.disabled {
+    color: var(--color-text-muted);
+    cursor: not-allowed;
+    opacity: 0.3;
+    text-decoration: line-through;
+}
+
+/* Días fuera del mes */
+.flatpickr-day.notInMonth {
+    color: var(--color-text-muted);
+    opacity: 0.3;
+    cursor: default;
+}
+
+/* Contenedor principal */
+.flatpickr-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+/* Input field */
+.flatpickr-input {
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    color: var(--color-text);
+    padding: 12px 16px;
+    font-family: var(--font-primary);
+    font-size: 16px;
+    transition: all var(--transition-base);
+    width: 100%;
+}
+
+.flatpickr-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .flatpickr-calendar {
+        width: 280px;
+        padding: 10px;
+        font-size: 13px;
+    }
+    
+    .flatpickr-day {
+        width: 32px;
+        height: 32px;
+        font-size: 13px;
+    }
+}

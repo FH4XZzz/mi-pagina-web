@@ -1,0 +1,15 @@
+[build]
+  publish = "."
+
+[build.environment]
+  HUGO_VERSION = "0.101.0"
+
+[[redirects]]
+  from = "/"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
