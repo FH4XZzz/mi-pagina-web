@@ -1580,6 +1580,22 @@ if (DEBUG_MODE) {
 // 11. GESTIÓN DE IMÁGENES DE SERVICIOS
 // ==========================================
 
+// Inicializar Supabase al final para asegurar que el SDK esté cargado
+try {
+    if (typeof window.supabase !== 'undefined') {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+            auth: {
+                persistSession: false,
+                autoRefreshToken: false,
+                detectSessionInUrl: false
+            }
+        });
+        console.log('⚡ Supabase inicializado correctamente');
+    }
+} catch (e) {
+    console.error('❌ Error al inicializar Supabase:', e);
+}
+
 /**
  * Analiza las tarjetas de servicios e inyecta fotos correspondientes automáticamente
  */
