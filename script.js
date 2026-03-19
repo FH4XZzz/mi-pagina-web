@@ -1373,11 +1373,11 @@ function initIOSGuide() {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
 
-    // Desactivar el selector nativo de iOS y evitar que se abra el teclado
+    // Desactivar el selector nativo de iOS y asegurar la apertura de Flatpickr
     const fechaInput = document.getElementById('fecha');
     if (fechaInput) {
         fechaInput.setAttribute('type', 'text');
-        // Usar click para abrir Flatpickr explícitamente en móviles si falla la detección automática
+        // Usar click para asegurar que Flatpickr se abra al tocar
         fechaInput.addEventListener('click', function() {
             if (this._flatpickr) {
                 this._flatpickr.open();
