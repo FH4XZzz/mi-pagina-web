@@ -6,8 +6,8 @@
 // 1. CONFIGURACIÓN Y VARIABLES GLOBALES
 // ==========================================
 
-const SUPABASE_URL = 'https://yheirw7jx5zjq9dbgdb41q.supabase.co'; 
-const SUPABASE_KEY = 'sb_publishable_yhEirw7Jx5ZJq9dBGdB41Q_toasJwEx';
+const SUPABASE_URL = 'https://jhsnlrarczlchcghtzqv.supabase.co'; 
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impoc25scmFyY3psY2hjZ2h0enF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NDYyNzgsImV4cCI6MjA4OTUyMjI3OH0.CXtbPIMBUBWgyLLjoU5PIY1eIaljVmHgvhJUQUe_9-E';
 let supabaseClient = null;
 
 // Modo de desarrollo (cambiar a false en producción)
