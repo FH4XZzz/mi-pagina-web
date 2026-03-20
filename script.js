@@ -1432,18 +1432,20 @@ async function cargarSolicitudesAdmin() {
     
     let solicitudes = [];
     
-    if (supabaseClient) {
-        // Consultar SOLO a Supabase para que sea global
-        const { data, error } = await supabaseClient
-            .from('ogbeatproduction')
-            .select('*')
-            .order('id', { ascending: false });
+        if (supabaseClient) {
+            // Consultar solo las solicitudes que NO han sido aceptadas aún
+            const { data, error } = await supabaseClient
+                .from('ogbeatproduction')
+                .select('*')
+                .or('estado.eq.pendiente,estado.is.null')
+                .order('id', { ascending: false });
             
         if (error) {
             console.error('❌ Error cargando de Supabase:', error);
             // Intentar fetch manual si el cliente falla
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/ogbeatproduction?select=*`, {
+                // También filtrar en el fetch manual
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/ogbeatproduction?select=*&or=(estado.eq.pendiente,estado.is.null)&order=id.desc`, {
                     headers: {
                         'apikey': SUPABASE_KEY,
                         'Authorization': `Bearer ${SUPABASE_KEY}`
