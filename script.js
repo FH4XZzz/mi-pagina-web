@@ -6,7 +6,7 @@
 // 1. CONFIGURACIÓN Y VARIABLES GLOBALES
 // ==========================================
 
-const SUPABASE_URL = 'https://yhEirw7Jx5ZJq9dBGdB41Q.supabase.co'; 
+const SUPABASE_URL = 'https://yheirw7jx5zjq9dbgdb41q.supabase.co'; 
 const SUPABASE_KEY = 'sb_publishable_yhEirw7Jx5ZJq9dBGdB41Q_toasJwEx';
 let supabaseClient = null;
 
