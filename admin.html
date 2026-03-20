@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23000'/%3E%3Ccircle cx='50' cy='50' r='40' fill='%23FFD700'/%3E%3Ccircle cx='50' cy='50' r='30' fill='%23000'/%3E%3C/svg%3E">
     <title>Panel Admin | OG Beat Production</title>
     <style>
         :root {
@@ -492,10 +494,11 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-        // CONFIGURACIÓN SUPABASE
-        const SUPABASE_URL = 'https://jhsnlrarczlchcghtzqv.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impoc25scmFyY3psY2hjZ2h0enF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NDYyNzgsImV4cCI6MjA4OTUyMjI3OH0.CXtbPIMBUBWgyLLjoU5PIY1eIaljVmHgvhJUQUe_9-E';
-        let supabaseInstance = null; // Renombrado para evitar conflictos
+        (function() {
+            // CONFIGURACIÓN SUPABASE
+            const SUPABASE_URL = 'https://jhsnlrarczlchcghtzqv.supabase.co';
+            const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impoc25scmFyY3psY2hjZ2h0enF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NDYyNzgsImV4cCI6MjA4OTUyMjI3OH0.CXtbPIMBUBWgyLLjoU5PIY1eIaljVmHgvhJUQUe_9-E';
+            let supabaseInstance = null;
 
         try {
             supabaseInstance = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -795,24 +798,7 @@
         window.openModal = openModal;
         window.closeModal = closeModal;
         window.saveCita = saveCita;
-
-        /**
-         * NOTA PARA SINCRONIZACIÓN:
-         * El formulario público en index.html debe usar la misma clave de localStorage:
-         * 
-         * let citas = JSON.parse(localStorage.getItem('citasOGBeat')) || [];
-         * citas.push({
-         *    id: Date.now().toString(),
-         *    nombre: nombreInput.value,
-         *    telefono: telInput.value,
-         *    fecha: fechaInput.value, // YYYY-MM-DD
-         *    hora: horaSelect.value,
-         *    servicio: servicioSelect.value,
-         *    estado: 'pendiente',
-         *    notas: commentsInput.value
-         * });
-         * localStorage.setItem('citasOGBeat', JSON.stringify(citas));
-         */
-    </script>
+    })();
+</script>
 </body>
 </html>
