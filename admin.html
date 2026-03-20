@@ -2,7 +2,12 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Apple Mobile Web App Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Admin OG Beat">
+    <link rel="apple-touch-icon" href="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=180&h=180&auto=format&fit=crop">
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23000'/%3E%3Ccircle cx='50' cy='50' r='40' fill='%23FFD700'/%3E%3Ccircle cx='50' cy='50' r='30' fill='%23000'/%3E%3C/svg%3E">
     <title>Panel Admin | OG Beat Production</title>
@@ -32,6 +37,9 @@
             background-color: var(--bg-dark);
             color: var(--text-main);
             overflow-x: hidden;
+            /* Evitar rebote en iOS y mejorar experiencia app */
+            overscroll-behavior-y: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         /* CARGA / LOADING */
