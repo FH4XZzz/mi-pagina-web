@@ -387,10 +387,10 @@
         <aside class="sidebar">
             <div class="sidebar-brand">OG BEAT ADMIN</div>
             <nav class="nav-list">
-                <li class="nav-item"><a class="nav-link active" onclick="filterBy('all', this)"><span>Todas las Citas</span></a></li>
-                <li class="nav-item"><a class="nav-link" onclick="filterBy('pendiente', this)"><span>Pendientes</span></a></li>
-                <li class="nav-item"><a class="nav-link" onclick="filterBy('completada', this)"><span>Completadas</span></a></li>
-                <li class="nav-item"><a class="nav-link" onclick="filterBy('cancelada', this)"><span>Canceladas</span></a></li>
+                <li class="nav-item"><a class="nav-link active" onclick="filterBy('pendiente', this)"><span>Solicitudes Pendientes</span></a></li>
+                <li class="nav-item"><a class="nav-link" onclick="filterBy('completada', this)"><span>Citas Aceptadas</span></a></li>
+                <li class="nav-item"><a class="nav-link" onclick="filterBy('cancelada', this)"><span>Historial/Canceladas</span></a></li>
+                <li class="nav-item"><a class="nav-link" onclick="filterBy('all', this)"><span>Todas las Citas</span></a></li>
                 <li class="nav-item" style="margin-top: 2rem;"><a class="nav-link" onclick="openModal()"><span>+ Agregar Manual</span></a></li>
             </nav>
             <a class="nav-link" onclick="handleLogout()" style="color: var(--danger);"><span>Cerrar Sesión</span></a>
@@ -599,7 +599,13 @@
                 currentFilter = estado;
                 document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
                 if(el) el.classList.add('active');
-                document.getElementById('filter-estado').value = estado;
+                
+                // Actualizar el valor del select de estado para que coincida con el filtro lateral
+                const selectEstado = document.getElementById('filter-estado');
+                if (selectEstado) {
+                    selectEstado.value = estado;
+                }
+                
                 renderCitas();
             }
 
@@ -702,14 +708,23 @@
 
             async function changeStatus(id, newStatus) {
                 showLoading(true);
-                if (ogSupabaseClient) {
-                    const { error } = await ogSupabaseClient
-                        .from('ogbeatproduction')
-                        .update({ estado: newStatus })
-                        .eq('id', id);
-                    
-                    if (error) showToast('Error al actualizar', 'error');
-                    else showToast(`Cita ${newStatus}`, 'success');
+                try {
+                    if (ogSupabaseClient) {
+                        const { error } = await ogSupabaseClient
+                            .from('ogbeatproduction')
+                            .update({ estado: newStatus })
+                            .eq('id', id);
+                        
+                        if (error) {
+                            console.error('Error Supabase:', error);
+                            showToast('Error al actualizar en la base de datos', 'error');
+                        } else {
+                            showToast(`Cita marcada como ${newStatus}`, 'success');
+                        }
+                    }
+                } catch (e) {
+                    console.error('Excepción al cambiar estado:', e);
+                    showToast('Error de conexión', 'error');
                 }
                 await refreshData();
                 showLoading(false);
