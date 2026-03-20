@@ -6,7 +6,7 @@
 // 1. CONFIGURACIÓN Y VARIABLES GLOBALES
 // ==========================================
 
-const SUPABASE_URL = 'https://yhEirw7Jx5ZJq9dBGdB41Q.supabase.co'; 
+const SUPABASE_URL = 'https://hsnlrarcclchcphtzqgu.supabase.co'; 
 const SUPABASE_KEY = 'sb_publishable_yhEirw7Jx5ZJq9dBGdB41Q_toasJwEx';
 let supabaseClient = null;
 
@@ -1435,13 +1435,37 @@ async function cargarSolicitudesAdmin() {
         // Consultar SOLO a Supabase para que sea global
         const { data, error } = await supabaseClient
             .from('Producción Ogbeat')
-            .select('*')
-            .order('id', { ascending: false });
+            .select('*');
             
         if (error) {
             console.error('❌ Error cargando de Supabase:', error);
-            lista.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #ff4444;">Error de conexión con la base de datos.</p>';
-            return;
+            // Intentar fetch manual si el cliente falla
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/Producci%C3%B3n%20Ogbeat?select=*`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                if (response.ok) {
+                    const fetchData = await response.json();
+                    solicitudes = fetchData.map(item => ({
+                        id: item.id,
+                        nombre: item.nombre,
+                        email: item["Correo electrónico"],
+                        telefono: item["teléfono"],
+                        servicio: item["Servicio"],
+                        fecha: item.fecha,
+                        hora: item.hora,
+                        comentarios: item["Comentarios"]
+                    }));
+                } else {
+                    throw new Error('Fetch falló');
+                }
+            } catch (fetchErr) {
+                lista.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #ff4444;">Error de conexión con la base de datos.</p>';
+                return;
+            }
         } else {
             // Mapear los nombres de columnas de Supabase a los nombres usados en el resto del script
             solicitudes = data.map(item => ({
