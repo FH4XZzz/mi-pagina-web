@@ -1115,8 +1115,8 @@ function mostrarConfirmacion(form) {
         
         console.log('📤 Intentando guardar en Supabase:', datosInsert);
         
-        // Usar fetch directo a la tabla con el nombre exacto de la imagen
-        fetch(`${SUPABASE_URL}/rest/v1/Producci%C3%B3n%20Ogbeat`, {
+        // Usar fetch directo a la tabla con el nombre exacto detectado en las políticas RLS
+        fetch(`${SUPABASE_URL}/rest/v1/ogbeatproduction`, {
             method: 'POST',
             headers: {
                 'apikey': SUPABASE_KEY,
@@ -1434,14 +1434,15 @@ async function cargarSolicitudesAdmin() {
     if (supabaseClient) {
         // Consultar SOLO a Supabase para que sea global
         const { data, error } = await supabaseClient
-            .from('Producción Ogbeat')
-            .select('*');
+            .from('ogbeatproduction')
+            .select('*')
+            .order('id', { ascending: false });
             
         if (error) {
             console.error('❌ Error cargando de Supabase:', error);
             // Intentar fetch manual si el cliente falla
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/Producci%C3%B3n%20Ogbeat?select=*`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/ogbeatproduction?select=*`, {
                     headers: {
                         'apikey': SUPABASE_KEY,
                         'Authorization': `Bearer ${SUPABASE_KEY}`
