@@ -1103,14 +1103,15 @@ function mostrarConfirmacion(form) {
     
     // 3. Guardar en Supabase (Base de datos real)
     if (supabaseClient) {
+        // Mapeo simplificado sin espacios ni acentos para máxima compatibilidad
         const datosInsert = {
             nombre: reserva.nombre,
-            "Correo electrónico": reserva.email,
-            "teléfono": reserva.telefono,
-            "Servicio": reserva.servicio,
+            email: reserva.email,
+            telefono: reserva.telefono,
+            servicio: reserva.servicio,
             fecha: reserva.fecha,
             hora: reserva.hora,
-            "Comentarios": reserva.comentarios
+            comentarios: reserva.comentarios
         };
         
         console.log('📤 Intentando guardar en Supabase:', datosInsert);
@@ -1453,12 +1454,12 @@ async function cargarSolicitudesAdmin() {
                     solicitudes = fetchData.map(item => ({
                         id: item.id,
                         nombre: item.nombre,
-                        email: item["Correo electrónico"],
-                        telefono: item["teléfono"],
-                        servicio: item["Servicio"],
+                        email: item.email || item["Correo electrónico"],
+                        telefono: item.telefono || item["teléfono"],
+                        servicio: item.servicio || item["Servicio"],
                         fecha: item.fecha,
                         hora: item.hora,
-                        comentarios: item["Comentarios"]
+                        comentarios: item.comentarios || item["Comentarios"]
                     }));
                 } else {
                     throw new Error('Fetch falló');
@@ -1472,12 +1473,12 @@ async function cargarSolicitudesAdmin() {
             solicitudes = data.map(item => ({
                 id: item.id,
                 nombre: item.nombre,
-                email: item["Correo electrónico"],
-                telefono: item["teléfono"],
-                servicio: item["Servicio"],
+                email: item.email || item["Correo electrónico"],
+                telefono: item.telefono || item["teléfono"],
+                servicio: item.servicio || item["Servicio"],
                 fecha: item.fecha,
                 hora: item.hora,
-                comentarios: item["Comentarios"]
+                comentarios: item.comentarios || item["Comentarios"]
             }));
         }
     } else {
