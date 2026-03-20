@@ -495,10 +495,10 @@
         // CONFIGURACIÓN SUPABASE
         const SUPABASE_URL = 'https://jhsnlrarczlchcghtzqv.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impoc25scmFyY3psY2hjZ2h0enF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NDYyNzgsImV4cCI6MjA4OTUyMjI3OH0.CXtbPIMBUBWgyLLjoU5PIY1eIaljVmHgvhJUQUe_9-E';
-        let supabase = null;
+        let supabaseInstance = null; // Renombrado para evitar conflictos
 
         try {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            supabaseInstance = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         } catch (e) {
             console.error('Error inicializando Supabase:', e);
         }
@@ -509,7 +509,8 @@
 
         // UI HELPERS
         function showLoading(show) {
-            document.getElementById('loading-overlay').style.display = show ? 'flex' : 'none';
+            const loader = document.getElementById('loading-overlay');
+            if (loader) loader.style.display = show ? 'flex' : 'none';
         }
 
         // LOGIN LOGIC
@@ -533,14 +534,13 @@
 
         // CORE DATA LOGIC (SUPABASE + LOCAL FALLBACK)
         async function getCitas() {
-            if (supabase) {
-                const { data, error } = await supabase
+            if (supabaseInstance) {
+                const { data, error } = await supabaseInstance
                     .from('ogbeatproduction')
                     .select('*')
                     .order('id', { ascending: false });
                 
                 if (!error) {
-                    // Sincronizar local con nube para respaldo
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
                     return data;
                 }
@@ -550,14 +550,10 @@
         }
 
         async function saveCitaToSupabase(cita) {
-            if (!supabase) return false;
-            
-            // Si tiene id numérico de timestamp, es nueva. Si es id de base de datos, es edit.
-            const isNew = !cita.id || cita.id.length > 15; // IDs de Supabase suelen ser seriales o UUIDs cortos comparados con timestamps
+            if (!supabaseInstance) return false;
             
             if (cita.id && !isNaN(cita.id)) {
-                // Es un timestamp local, intentar insertar
-                const { data, error } = await supabase
+                const { data, error } = await supabaseInstance
                     .from('ogbeatproduction')
                     .insert([{
                         nombre: cita.nombre,
@@ -571,8 +567,7 @@
                     }]);
                 return !error;
             } else {
-                // Es una actualización
-                const { error } = await supabase
+                const { error } = await supabaseInstance
                     .from('ogbeatproduction')
                     .update({
                         nombre: cita.nombre,
@@ -595,7 +590,7 @@
         }
 
         async function refreshData() {
-            updateStats();
+            await updateStats();
             await renderCitas();
         }
 
@@ -613,7 +608,7 @@
             
             document.getElementById('stat-total').innerText = citas.length;
             document.getElementById('stat-hoy').innerText = citas.filter(c => c.fecha === hoy).length;
-            document.getElementById('stat-pend').innerText = citas.filter(c => c.estado === 'pendiente' || !c.estado).length;
+            document.getElementById('stat-pend').innerText = citas.filter(c => (c.estado || 'pendiente') === 'pendiente').length;
             
             const startOfWeek = new Date();
             startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
@@ -631,19 +626,18 @@
         async function renderCitas() {
             const citas = await getCitas();
             const body = document.getElementById('citas-body');
-            const search = document.getElementById('search').value.toLowerCase();
+            const searchInput = document.getElementById('search');
+            const search = searchInput ? searchInput.value.toLowerCase() : '';
             const estadoFiltro = document.getElementById('filter-estado').value;
             const desde = document.getElementById('filter-desde').value;
             const hasta = document.getElementById('filter-hasta').value;
 
-            // Ordenar por fecha/hora desc
             let filtered = citas.sort((a, b) => {
                 const d1 = new Date(a.fecha + 'T' + a.hora);
                 const d2 = new Date(b.fecha + 'T' + b.hora);
                 return d2 - d1;
             });
 
-            // Aplicar filtros
             filtered = filtered.filter(c => {
                 const nombre = c.nombre || '';
                 const tel = c.telefono || '';
@@ -692,17 +686,13 @@
             }
         }
 
-        // ACTIONS
         async function deleteCita(id) {
-            if(confirm('¿Estás seguro de eliminar esta cita permanentemente de la base de datos?')) {
+            if(confirm('¿Estás seguro de eliminar esta cita permanentemente?')) {
                 showLoading(true);
-                if (supabase) {
-                    const { error } = await supabase.from('ogbeatproduction').delete().eq('id', id);
-                    if (error) {
-                        showToast('Error al eliminar en la nube', 'error');
-                    } else {
-                        showToast('Cita eliminada correctamente', 'success');
-                    }
+                if (supabaseInstance) {
+                    const { error } = await supabaseInstance.from('ogbeatproduction').delete().eq('id', id);
+                    if (error) showToast('Error al eliminar', 'error');
+                    else showToast('Eliminada correctamente', 'success');
                 }
                 await refreshData();
                 showLoading(false);
@@ -711,23 +701,19 @@
 
         async function changeStatus(id, newStatus) {
             showLoading(true);
-            if (supabase) {
-                const { error } = await supabase
+            if (supabaseInstance) {
+                const { error } = await supabaseInstance
                     .from('ogbeatproduction')
                     .update({ estado: newStatus })
                     .eq('id', id);
                 
-                if (error) {
-                    showToast('Error al actualizar en la nube', 'error');
-                } else {
-                    showToast(`Cita marcada como ${newStatus}`, 'success');
-                }
+                if (error) showToast('Error al actualizar', 'error');
+                else showToast(`Cita ${newStatus}`, 'success');
             }
             await refreshData();
             showLoading(false);
         }
 
-        // MODAL LOGIC
         function openModal() {
             document.getElementById('edit-id').value = '';
             document.getElementById('modal-title').innerText = 'Nueva Cita';
@@ -774,31 +760,41 @@
             };
 
             if(!nueva.nombre || !nueva.telefono || !nueva.fecha || !nueva.hora) {
-                showToast('Por favor completa los campos obligatorios', 'error');
+                showToast('Completa los campos obligatorios', 'error');
                 return;
             }
 
             showLoading(true);
             const success = await saveCitaToSupabase(nueva);
-            
             if (success) {
-                showToast(id ? 'Cita actualizada en la nube' : 'Nueva cita guardada en la nube', 'success');
+                showToast('Guardado correctamente', 'success');
                 closeModal();
                 await refreshData();
             } else {
-                showToast('Error al sincronizar con Supabase', 'error');
+                showToast('Error al sincronizar', 'error');
             }
             showLoading(false);
         }
 
-        // UI HELPERS
         function showToast(msg, type) {
             const t = document.getElementById('toast');
+            if (!t) return;
             t.innerText = msg;
-            t.className = type === 'success' ? 'toast-success' : 'toast-error';
-            t.classList.add('show');
+            t.className = type === 'success' ? 'toast-success show' : 'toast-error show';
             setTimeout(() => t.classList.remove('show'), 3000);
         }
+
+        // Hacer funciones globales
+        window.handleLogin = handleLogin;
+        window.handleLogout = handleLogout;
+        window.filterBy = filterBy;
+        window.renderCitas = renderCitas;
+        window.editCita = editCita;
+        window.changeStatus = changeStatus;
+        window.deleteCita = deleteCita;
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+        window.saveCita = saveCita;
 
         /**
          * NOTA PARA SINCRONIZACIÓN:
