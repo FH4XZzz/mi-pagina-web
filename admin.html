@@ -32,6 +32,35 @@
             overflow-x: hidden;
         }
 
+        /* CARGA / LOADING */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-dark);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         /* LOGIN STYLES */
         #login-overlay {
             position: fixed;
@@ -335,6 +364,11 @@
 </head>
 <body>
 
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <p>Sincronizando con la nube...</p>
+    </div>
+
     <!-- LOGIN SECTION -->
     <div id="login-overlay">
         <div class="login-card">
@@ -454,10 +488,29 @@
 
     <div id="toast"></div>
 
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script>
-        // CONFIGURACIÓN
+        // CONFIGURACIÓN SUPABASE
+        const SUPABASE_URL = 'https://jhsnlrarczlchcghtzqv.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impoc25scmFyY3psY2hjZ2h0enF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NDYyNzgsImV4cCI6MjA4OTUyMjI3OH0.CXtbPIMBUBWgyLLjoU5PIY1eIaljVmHgvhJUQUe_9-E';
+        let supabase = null;
+
+        try {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        } catch (e) {
+            console.error('Error inicializando Supabase:', e);
+        }
+
+        // CONFIGURACIÓN LOCAL
         const STORAGE_KEY = 'citasOGBeat';
         let currentFilter = 'all';
+
+        // UI HELPERS
+        function showLoading(show) {
+            document.getElementById('loading-overlay').style.display = show ? 'flex' : 'none';
+        }
 
         // LOGIN LOGIC
         function handleLogin() {
@@ -478,20 +531,72 @@
             location.reload();
         }
 
-        // CORE DATA LOGIC
-        function getCitas() {
+        // CORE DATA LOGIC (SUPABASE + LOCAL FALLBACK)
+        async function getCitas() {
+            if (supabase) {
+                const { data, error } = await supabase
+                    .from('ogbeatproduction')
+                    .select('*')
+                    .order('id', { ascending: false });
+                
+                if (!error) {
+                    // Sincronizar local con nube para respaldo
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                    return data;
+                }
+                console.error('Error Supabase:', error);
+            }
             return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
         }
 
-        function saveToStorage(citas) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(citas));
-            updateStats();
-            renderCitas();
+        async function saveCitaToSupabase(cita) {
+            if (!supabase) return false;
+            
+            // Si tiene id numérico de timestamp, es nueva. Si es id de base de datos, es edit.
+            const isNew = !cita.id || cita.id.length > 15; // IDs de Supabase suelen ser seriales o UUIDs cortos comparados con timestamps
+            
+            if (cita.id && !isNaN(cita.id)) {
+                // Es un timestamp local, intentar insertar
+                const { data, error } = await supabase
+                    .from('ogbeatproduction')
+                    .insert([{
+                        nombre: cita.nombre,
+                        email: cita.email || '',
+                        telefono: cita.telefono,
+                        servicio: cita.servicio,
+                        fecha: cita.fecha,
+                        hora: cita.hora,
+                        comentarios: cita.notas || '',
+                        estado: cita.estado || 'pendiente'
+                    }]);
+                return !error;
+            } else {
+                // Es una actualización
+                const { error } = await supabase
+                    .from('ogbeatproduction')
+                    .update({
+                        nombre: cita.nombre,
+                        telefono: cita.telefono,
+                        fecha: cita.fecha,
+                        hora: cita.hora,
+                        servicio: cita.servicio,
+                        comentarios: cita.notas,
+                        estado: cita.estado
+                    })
+                    .eq('id', cita.id);
+                return !error;
+            }
         }
 
-        function init() {
+        async function init() {
+            showLoading(true);
+            await refreshData();
+            showLoading(false);
+        }
+
+        async function refreshData() {
             updateStats();
-            renderCitas();
+            await renderCitas();
         }
 
         function filterBy(estado, el) {
@@ -502,15 +607,14 @@
             renderCitas();
         }
 
-        function updateStats() {
-            const citas = getCitas();
+        async function updateStats() {
+            const citas = await getCitas();
             const hoy = new Date().toISOString().split('T')[0];
             
             document.getElementById('stat-total').innerText = citas.length;
             document.getElementById('stat-hoy').innerText = citas.filter(c => c.fecha === hoy).length;
-            document.getElementById('stat-pend').innerText = citas.filter(c => c.estado === 'pendiente').length;
+            document.getElementById('stat-pend').innerText = citas.filter(c => c.estado === 'pendiente' || !c.estado).length;
             
-            // Stats de semana simple
             const startOfWeek = new Date();
             startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
             const endOfWeek = new Date();
@@ -524,8 +628,8 @@
             document.getElementById('stat-semana').innerText = semanaCount;
         }
 
-        function renderCitas() {
-            const citas = getCitas();
+        async function renderCitas() {
+            const citas = await getCitas();
             const body = document.getElementById('citas-body');
             const search = document.getElementById('search').value.toLowerCase();
             const estadoFiltro = document.getElementById('filter-estado').value;
@@ -541,8 +645,12 @@
 
             // Aplicar filtros
             filtered = filtered.filter(c => {
-                const matchSearch = c.nombre.toLowerCase().includes(search) || c.telefono.includes(search);
-                const matchEstado = estadoFiltro === 'all' || c.estado === estadoFiltro;
+                const nombre = c.nombre || '';
+                const tel = c.telefono || '';
+                const estado = c.estado || 'pendiente';
+                
+                const matchSearch = nombre.toLowerCase().includes(search) || tel.includes(search);
+                const matchEstado = estadoFiltro === 'all' || estado === estadoFiltro;
                 const matchDesde = !desde || c.fecha >= desde;
                 const matchHasta = !hasta || c.fecha <= hasta;
                 return matchSearch && matchEstado && matchDesde && matchHasta;
@@ -553,6 +661,7 @@
                 const row = document.createElement('tr');
                 const [y, m, d] = c.fecha.split('-');
                 const fechaFormateada = `${d}/${m}/${y}`;
+                const estado = c.estado || 'pendiente';
 
                 row.innerHTML = `
                     <td>
@@ -566,13 +675,13 @@
                         </a>
                     </td>
                     <td>${c.servicio}</td>
-                    <td><span class="badge badge-${c.estado}">${c.estado.toUpperCase()}</span></td>
-                    <td style="max-width:150px; font-size:0.85rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap" title="${c.notas}">${c.notas || '-'}</td>
+                    <td><span class="badge badge-${estado}">${estado.toUpperCase()}</span></td>
+                    <td style="max-width:150px; font-size:0.85rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap" title="${c.comentarios || c.notas}">${c.comentarios || c.notas || '-'}</td>
                     <td>
-                        <button class="btn btn-edit" onclick="editCita('${c.id}')">✏️</button>
-                        ${c.estado === 'pendiente' ? `<button class="btn btn-complete" onclick="changeStatus('${c.id}', 'completada')">✅</button>` : ''}
-                        ${c.estado === 'pendiente' ? `<button class="btn btn-cancel" onclick="changeStatus('${c.id}', 'cancelada')">🚫</button>` : ''}
-                        <button class="btn btn-delete" onclick="deleteCita('${c.id}')">🗑️</button>
+                        <button class="btn btn-edit" onclick="editCita('${c.id}')" title="Editar">✏️</button>
+                        ${estado === 'pendiente' ? `<button class="btn btn-complete" onclick="changeStatus('${c.id}', 'completada')" title="Completar">✅</button>` : ''}
+                        ${estado === 'pendiente' ? `<button class="btn btn-cancel" onclick="changeStatus('${c.id}', 'cancelada')" title="Cancelar">🚫</button>` : ''}
+                        <button class="btn btn-delete" onclick="deleteCita('${c.id}')" title="Eliminar">🗑️</button>
                     </td>
                 `;
                 body.appendChild(row);
@@ -584,21 +693,38 @@
         }
 
         // ACTIONS
-        function deleteCita(id) {
-            if(confirm('¿Estás seguro de eliminar esta cita?')) {
-                const citas = getCitas().filter(c => c.id !== id);
-                saveToStorage(citas);
-                showToast('Cita eliminada correctamente', 'success');
+        async function deleteCita(id) {
+            if(confirm('¿Estás seguro de eliminar esta cita permanentemente de la base de datos?')) {
+                showLoading(true);
+                if (supabase) {
+                    const { error } = await supabase.from('ogbeatproduction').delete().eq('id', id);
+                    if (error) {
+                        showToast('Error al eliminar en la nube', 'error');
+                    } else {
+                        showToast('Cita eliminada correctamente', 'success');
+                    }
+                }
+                await refreshData();
+                showLoading(false);
             }
         }
 
-        function changeStatus(id, newStatus) {
-            const citas = getCitas().map(c => {
-                if(c.id === id) c.estado = newStatus;
-                return c;
-            });
-            saveToStorage(citas);
-            showToast(`Cita marcada como ${newStatus}`, 'success');
+        async function changeStatus(id, newStatus) {
+            showLoading(true);
+            if (supabase) {
+                const { error } = await supabase
+                    .from('ogbeatproduction')
+                    .update({ estado: newStatus })
+                    .eq('id', id);
+                
+                if (error) {
+                    showToast('Error al actualizar en la nube', 'error');
+                } else {
+                    showToast(`Cita marcada como ${newStatus}`, 'success');
+                }
+            }
+            await refreshData();
+            showLoading(false);
         }
 
         // MODAL LOGIC
@@ -614,8 +740,9 @@
             document.getElementById('modal-overlay').style.display = 'flex';
         }
 
-        function editCita(id) {
-            const cita = getCitas().find(c => c.id === id);
+        async function editCita(id) {
+            const citas = await getCitas();
+            const cita = citas.find(c => c.id.toString() === id.toString());
             if(!cita) return;
 
             document.getElementById('edit-id').value = cita.id;
@@ -625,7 +752,7 @@
             document.getElementById('f-fecha').value = cita.fecha;
             document.getElementById('f-hora').value = cita.hora;
             document.getElementById('f-servicio').value = cita.servicio;
-            document.getElementById('f-notas').value = cita.notas;
+            document.getElementById('f-notas').value = cita.comentarios || cita.notas || '';
             document.getElementById('modal-overlay').style.display = 'flex';
         }
 
@@ -633,7 +760,7 @@
             document.getElementById('modal-overlay').style.display = 'none';
         }
 
-        function saveCita() {
+        async function saveCita() {
             const id = document.getElementById('edit-id').value;
             const nueva = {
                 id: id || Date.now().toString(),
@@ -651,19 +778,17 @@
                 return;
             }
 
-            let citas = getCitas();
-            if(id) {
-                // Editar
-                citas = citas.map(c => c.id === id ? {...c, ...nueva, estado: c.estado} : c);
-                showToast('Cita actualizada', 'success');
+            showLoading(true);
+            const success = await saveCitaToSupabase(nueva);
+            
+            if (success) {
+                showToast(id ? 'Cita actualizada en la nube' : 'Nueva cita guardada en la nube', 'success');
+                closeModal();
+                await refreshData();
             } else {
-                // Nueva
-                citas.push(nueva);
-                showToast('Nueva cita agregada', 'success');
+                showToast('Error al sincronizar con Supabase', 'error');
             }
-
-            saveToStorage(citas);
-            closeModal();
+            showLoading(false);
         }
 
         // UI HELPERS
