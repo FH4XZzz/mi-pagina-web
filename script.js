@@ -364,116 +364,106 @@ function initScrollAnimations() {
 // ==========================================
 
 /**
- * Inicializa la validación del formulario de reserva
+ * Sanitiza una cadena de texto para prevenir XSS
+ */
+function sanitizeHTML(str) {
+    if (!str) return '';
+    const temp = document.createElement('div');
+    temp.textContent = str;
+    return temp.innerHTML;
+}
+
+/**
+ * Valida un email con regex robusto
+ */
+function validarEmail(email) {
+    const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return re.test(String(email).toLowerCase());
+}
+
+/**
+ * Valida un teléfono (formato internacional básico)
+ */
+function validarTelefono(telefono) {
+    const re = /^\+?[0-9\s\-()]{7,20}$/;
+    return re.test(telefono);
+}
+
+// Rate Limiting básico para el formulario
+const RATE_LIMIT_MS = 30000; // 30 segundos entre envíos
+let ultimoEnvio = 0;
+
+/**
+ * Inicializa la validación del formulario de reserva con seguridad mejorada
  */
 function initFormValidation() {
     const form = document.getElementById('formReserva');
-    const confirmacionMensaje = document.getElementById('confirmacionMensaje');
-    
     if (!form) return;
     
-    // Configurar disponibilidad de fechas (desde mañana en adelante)
     configurarDisponibilidadFechas();
     
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        // Validar todos los campos
+        // Anti-Spam / Rate Limiting
+        const ahora = Date.now();
+        if (ahora - ultimoEnvio < RATE_LIMIT_MS) {
+            const espera = Math.ceil((RATE_LIMIT_MS - (ahora - ultimoEnvio)) / 1000);
+            alert(`Por favor espera ${espera} segundos antes de enviar otra solicitud.`);
+            return;
+        }
+
         if (validarFormulario()) {
-            // Extraer datos del formulario (con null checks)
-            const nombreElem = document.getElementById('nombre');
-            const emailElem = document.getElementById('email');
-            const telefonoElem = document.getElementById('telefono');
-            const servicioElem = document.getElementById('servicio');
-            const fechaElem = document.getElementById('fecha');
-            const horaElem = document.getElementById('hora');
+            const btnSubmit = form.querySelector('button[type="submit"]');
+            const originalText = btnSubmit.textContent;
             
-            // Protección: si falta algún elemento, cancelar
-            if (!nombreElem || !emailElem || !telefonoElem || !servicioElem || !fechaElem || !horaElem) {
-                console.error(' Falta algún elemento del formulario');
-                alert('Error: No se pudieron obtener los datos del formulario');
-                return;
-            }
-            
-            const nombre = nombreElem.value.trim();
-            const email = emailElem.value.trim();
-            const telefono = telefonoElem.value.trim();
-            const servicio = servicioElem.value;
-            const fechaInput = fechaElem.value;
-            const horaInput = horaElem.value;
-            const mensajeElem = document.getElementById('mensaje');
-            const mensaje = mensajeElem ? mensajeElem.value.trim() : '';
-            
-            // Convertir fecha a formato ISO (YYYY-MM-DD)
-            if (fechaInput && horaInput) {
-                try {
-                    // Parsear fecha de Flatpickr (d/m/Y → YYYY-MM-DD)
-                    const fechaISO = parsearFechaFlatpickr(fechaInput);
-                    
-                    if (!fechaISO) {
-                        console.error('❌ Error al parsear fecha');
-                        alert('❌ Error: Fecha inválida. Por favor selecciona nuevamente.');
-                        return;
-                    }
-                    
-                    // AGREGAR RESERVA AL SISTEMA (bloquea 2 horas automáticamente)
-                    const reservaAgregada = SISTEMA_DISPONIBILIDAD.agregarReserva(fechaISO, horaInput, nombre);
-                    
-                    if (!reservaAgregada) {
-                        console.error('❌ No se pudo agregar la reserva. La hora no está disponible.');
-                        alert('❌ Esta hora no está disponible. Por favor selecciona otra.');
-                        return;
-                    }
-                } catch (error) {
-                    console.error('❌ Error al procesar la reserva:', error);
-                    alert('❌ Error al procesar la reserva. Por favor intenta nuevamente.');
-                    return;
+            try {
+                btnSubmit.disabled = true;
+                btnSubmit.textContent = 'Procesando...';
+
+                // Sanitización de datos antes de procesar
+                const datos = {
+                    nombre: sanitizeHTML(document.getElementById('nombre').value),
+                    email: sanitizeHTML(document.getElementById('email').value),
+                    telefono: sanitizeHTML(document.getElementById('telefono').value),
+                    servicio: sanitizeHTML(document.getElementById('servicio').value),
+                    fecha: sanitizeHTML(document.getElementById('fecha').value),
+                    hora: sanitizeHTML(document.getElementById('hora').value),
+                    comentarios: sanitizeHTML(document.getElementById('comentarios').value)
+                };
+
+                const fechaISO = parsearFechaFlatpickr(datos.fecha);
+                if (!fechaISO) throw new Error('Fecha inválida');
+
+                // Enviar a Supabase (si está configurado)
+                if (window.supabaseInstance) {
+                    const { error } = await window.supabaseInstance
+                        .from('ogbeatproduction')
+                        .insert([{
+                            nombre: datos.nombre,
+                            email: datos.email,
+                            telefono: datos.telefono,
+                            servicio: datos.servicio,
+                            fecha: fechaISO,
+                            hora: datos.hora,
+                            comentarios: datos.comentarios,
+                            estado: 'pendiente'
+                        }]);
+                    if (error) throw error;
                 }
+
+                ultimoEnvio = Date.now();
+                mostrarConfirmacion(form, datos);
+                form.reset();
+            } catch (error) {
+                console.error('Error de seguridad/red:', error);
+                alert('Hubo un error al procesar tu solicitud. Inténtalo de nuevo más tarde.');
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = originalText;
             }
-            
-            // Mostrar confirmación
-            mostrarConfirmacion(form);
-            
-            // Redibujar horarios disponibles
-            if (fechaElem && fechaElem.value) {
-                try {
-                    const fechaISO = parsearFechaFlatpickr(fechaElem.value);
-                    if (fechaISO) {
-                        const fechaSeleccionada = new Date(fechaISO + 'T00:00:00');
-                        actualizarHorariosDisponibles(fechaSeleccionada);
-                    }
-                } catch (error) {
-                    console.error('Error al actualizar horarios:', error);
-                }
-            }
-            
-            // Limpiar formulario después de 2 segundos
-            setTimeout(function() {
-                if (form) form.reset();
-                // Reinicializar horarios disponibles
-                const horaSelect = document.getElementById('hora');
-                if (horaSelect) {
-                    horaSelect.innerHTML = '<option value="">Selecciona una hora</option>';
-                }
-            }, 2000);
         }
     });
-    
-    // Validar en tiempo real (solo si el formulario existe)
-    if (form) {
-        const inputs = form.querySelectorAll('input, select, textarea');
-        inputs.forEach(input => {
-            if (input) {
-                input.addEventListener('blur', function() {
-                    validarCampo(this);
-                });
-                
-                input.addEventListener('change', function() {
-                    validarCampo(this);
-                });
-            }
-        });
-    }
 }
 
 /**
