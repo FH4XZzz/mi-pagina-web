@@ -851,10 +851,10 @@
                         if (DEBUG_MODE) console.log('✅ Estado actualizado en Supabase');
                         showToast(`Cita marcada como ${newStatus.toUpperCase()}`, 'success');
                         
-                        // 3. Forzar refresco de datos locales para que desaparezca de la lista actual
+                        // 3. Forzar refresco de datos locales
                         await refreshData();
 
-                        // 4. Acciones automáticas (WhatsApp) - Se abren en nueva pestaña
+                        // 4. Acciones automáticas (WhatsApp)
                         if (currentData) {
                             const [y, m, d] = currentData.fecha.split('-');
                             const fechaFormateada = `${d}/${m}/${y}`;
@@ -869,7 +869,11 @@
                             if (mensaje) {
                                 if (DEBUG_MODE) console.log('📱 Abriendo WhatsApp con mensaje:', mensaje);
                                 const waUrl = `https://wa.me/${currentData.telefono.replace(/\D/g,'')}?text=${encodeURIComponent(mensaje)}`;
-                                window.open(waUrl, '_blank');
+                                
+                                // Pequeño delay para asegurar que el DOM se actualizó antes de abrir WhatsApp
+                                setTimeout(() => {
+                                    window.open(waUrl, '_blank');
+                                }, 100);
                             }
                         }
                     } else {
