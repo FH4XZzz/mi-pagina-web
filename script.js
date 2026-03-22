@@ -1246,17 +1246,11 @@ function mostrarConfirmacion(form) {
         });
     }
 
-    // Guardar localmente como respaldo
-    // Simular guardado local (localStorage)
-    const solicitudes = JSON.parse(localStorage.getItem('solicitudes_reservas') || '[]');
-    solicitudes.push(reserva);
-    localStorage.setItem('solicitudes_reservas', JSON.stringify(solicitudes));
-
-    // SINCRONIZAR CON EL NUEVO PANEL PROFESIONAL (admin.html)
-    const citasAdmin = JSON.parse(localStorage.getItem('citasOGBeat')) || [];
-    citasAdmin.push({
+    // Guardar localmente como respaldo (Opcional, ahora la prioridad es Supabase)
+    const solicitudes = JSON.parse(localStorage.getItem('citasOGBeat') || '[]');
+    solicitudes.push({
         id: reserva.id.toString(),
-        fecha: reserva.fecha, // YYYY-MM-DD
+        fecha: reserva.fecha, 
         hora: reserva.hora,
         nombre: reserva.nombre,
         telefono: reserva.telefono,
@@ -1264,9 +1258,9 @@ function mostrarConfirmacion(form) {
         estado: 'pendiente',
         notas: reserva.comentarios
     });
-    localStorage.setItem('citasOGBeat', JSON.stringify(citasAdmin));
+    localStorage.setItem('citasOGBeat', JSON.stringify(solicitudes));
 
-    // Actualizar mensaje de confirmación (solo si los elementos existen)
+    // Actualizar mensaje de confirmación
     const emailConfirmado = document.getElementById('emailConfirmado');
     const telefonoConfirmado = document.getElementById('telefonoConfirmado');
     
