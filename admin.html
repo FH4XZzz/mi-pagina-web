@@ -7,11 +7,12 @@
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <!-- Apple Mobile Web App Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Admin OG Beat">
+    <meta name="apple-mobile-web-app-title" content="AdminBeat">
+    <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=180&h=180&auto=format&fit=crop">
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23000'/%3E%3Ccircle cx='50' cy='50' r='40' fill='%23FFD700'/%3E%3Ccircle cx='50' cy='50' r='30' fill='%23000'/%3E%3C/svg%3E">
@@ -45,6 +46,8 @@
             /* Evitar rebote en iOS y mejorar experiencia app */
             overscroll-behavior-y: none;
             -webkit-tap-highlight-color: transparent;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
         /* CARGA / LOADING */
@@ -370,35 +373,69 @@
             .sidebar {
                 width: 100%;
                 height: auto;
-                position: relative;
+                position: sticky;
+                top: 0;
                 border-right: none;
                 border-bottom: 1px solid var(--border);
+                padding: 1rem;
             }
-            .sidebar-brand { margin-bottom: 1rem; }
-            .nav-list { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+            .sidebar-brand { margin-bottom: 0.5rem; font-size: 1rem; }
+            .nav-list { display: flex; flex-wrap: wrap; gap: 0.25rem; justify-content: center; }
             .nav-item { margin-bottom: 0; }
-            .nav-link span { display: inline; font-size: 0.8rem; }
-            .main-content { margin-left: 0; padding: 1rem; }
-            .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-            .stat-card { padding: 1rem; }
-            .stat-value { font-size: 1.5rem; }
+            .nav-link { padding: 0.5rem 0.75rem; }
+            .nav-link span { display: inline; font-size: 0.75rem; }
+            .main-content { margin-left: 0; padding: 1rem; padding-bottom: 5rem; }
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+            .stat-card { padding: 0.75rem; }
+            .stat-value { font-size: 1.25rem; }
             
-            /* Tablas en móvil */
-            table, thead, tbody, th, td, tr { display: block; }
-            thead tr { position: absolute; top: -9999px; left: -9999px; }
-            tr { border: 1px solid var(--border); border-radius: 0.5rem; margin-bottom: 1rem; background: var(--bg-card); }
-            td { border: none; border-bottom: 1px solid rgba(255,255,255,0.05); position: relative; padding-left: 40%; }
-            td:before { position: absolute; left: 1rem; width: 35%; white-space: nowrap; color: var(--text-muted); font-size: 0.75rem; font-weight: bold; }
-            td:nth-of-type(1):before { content: "FECHA"; }
-            td:nth-of-type(2):before { content: "CLIENTE"; }
-            td:nth-of-type(3):before { content: "SERVICIO"; }
-            td:nth-of-type(4):before { content: "ESTADO"; }
-            td:nth-of-type(5):before { content: "NOTAS"; }
-            td:nth-of-type(6):before { content: "ACCIONES"; }
-            td:last-child { border-bottom: none; padding-left: 1rem; text-align: center; }
+            /* Tarjetas en lugar de tablas en móvil */
+            .table-container { background: transparent; border: none; }
+            table, thead, tbody, th, td, tr { display: block; width: 100%; }
+            thead { display: none; }
+            tr { 
+                background: var(--bg-card); 
+                margin-bottom: 1rem; 
+                border-radius: 1rem; 
+                padding: 1rem;
+                border: 1px solid var(--border);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+            td { 
+                padding: 0.5rem 0; 
+                border: none; 
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                text-align: right;
+            }
+            td:before { 
+                content: attr(data-label); 
+                font-weight: bold; 
+                color: var(--text-muted); 
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                text-align: left;
+            }
+            td:last-child { 
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid var(--border);
+                justify-content: center;
+                gap: 0.5rem;
+            }
             
-            .controls-row { flex-direction: column; }
-            .form-input { max-width: 100% !important; }
+            .btn {
+                min-width: 44px;
+                min-height: 44px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0;
+            }
+
+            .controls-row { flex-direction: column; padding: 0.75rem; }
+            .form-input { max-width: 100% !important; height: 44px; }
         }
     </style>
 </head>
@@ -713,23 +750,23 @@
                     const estado = c.estado || 'pendiente';
 
                     row.innerHTML = `
-                        <td>
+                        <td data-label="FECHA">
                             <div style="font-weight:600">${fechaFormateada}</div>
                             <div style="font-size:0.8rem; color:var(--text-muted)">${c.hora}</div>
                         </td>
-                        <td>
+                        <td data-label="CLIENTE">
                             <div style="font-weight:600">${c.nombre}</div>
                             <a href="https://wa.me/${c.telefono.replace(/\D/g,'')}" target="_blank" style="color:var(--success); font-size:0.85rem; text-decoration:none">
                                 <small>📱 ${c.telefono}</small>
                             </a>
                         </td>
-                        <td>${c.servicio}</td>
-                        <td><span class="badge badge-${estado}">${estado.toUpperCase()}</span></td>
-                        <td style="max-width:150px; font-size:0.85rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap" title="${c.comentarios || c.notas}">${c.comentarios || c.notas || '-'}</td>
-                        <td>
+                        <td data-label="SERVICIO">${c.servicio}</td>
+                        <td data-label="ESTADO"><span class="badge badge-${estado}">${estado.toUpperCase()}</span></td>
+                        <td data-label="NOTAS" style="max-width:150px; font-size:0.85rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap" title="${c.comentarios || c.notas}">${c.comentarios || c.notas || '-'}</td>
+                        <td data-label="ACCIONES">
                             <button class="btn btn-edit" onclick="editCita('${c.id}')" title="Editar">✏️</button>
-                            ${estado === 'pendiente' ? `<button class="btn btn-complete" onclick="changeStatus('${c.id}', 'completada')" title="Completar">✅</button>` : ''}
-                            ${estado === 'pendiente' ? `<button class="btn btn-cancel" onclick="changeStatus('${c.id}', 'cancelada')" title="Cancelar">🚫</button>` : ''}
+                            ${estado === 'pendiente' ? `<button class="btn btn-complete" onclick="changeStatus('${c.id}', 'completada')" title="Aprobar">✅</button>` : ''}
+                            ${estado === 'pendiente' ? `<button class="btn btn-cancel" onclick="changeStatus('${c.id}', 'cancelada')" title="Rechazar">🚫</button>` : ''}
                             <button class="btn btn-delete" onclick="deleteCita('${c.id}')" title="Eliminar">🗑️</button>
                         </td>
                     `;
@@ -758,6 +795,13 @@
                 showLoading(true);
                 try {
                     if (ogSupabaseClient) {
+                        // Obtener datos de la cita antes de actualizar para enviar WhatsApp
+                        const { data: currentData } = await ogSupabaseClient
+                            .from('ogbeatproduction')
+                            .select('*')
+                            .eq('id', id)
+                            .single();
+
                         const { error } = await ogSupabaseClient
                             .from('ogbeatproduction')
                             .update({ estado: newStatus })
@@ -768,6 +812,17 @@
                             showToast('Error al actualizar en la base de datos', 'error');
                         } else {
                             showToast(`Cita marcada como ${newStatus}`, 'success');
+                            
+                            // Enviar WhatsApp si se aprueba
+                            if (newStatus === 'completada' && currentData) {
+                                const [y, m, d] = currentData.fecha.split('-');
+                                const fechaFormateada = `${d}/${m}/${y}`;
+                                const mensaje = `¡Hola ${currentData.nombre}! Tu cita en OG BEAT fue aceptada. Te espero en el studio el ${fechaFormateada} a las ${currentData.hora}. 📀 ¡Vamos a crear magia!`;
+                                window.open(`https://wa.me/${currentData.telefono.replace(/\D/g,'')}?text=${encodeURIComponent(mensaje)}`, '_blank');
+                            } else if (newStatus === 'cancelada' && currentData) {
+                                const mensaje = `Hola ${currentData.nombre}, lamentablemente tu solicitud de cita en OG BEAT no pudo ser procesada. Contáctanos para reprogramar.`;
+                                window.open(`https://wa.me/${currentData.telefono.replace(/\D/g,'')}?text=${encodeURIComponent(mensaje)}`, '_blank');
+                            }
                         }
                     }
                 } catch (e) {
