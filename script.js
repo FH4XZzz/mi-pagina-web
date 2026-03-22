@@ -452,23 +452,37 @@ function initFormValidation() {
                 // Enviar a Pabbly Connect (Webhook) para recordatorios de WhatsApp
                 if (PABBLY_WEBHOOK_URL) {
                     const data = {
-                        ...datos,
+                        nombre: datos.nombre,
+                        email: datos.email,
+                        telefono: datos.telefono,
+                        servicio: datos.servicio,
+                        fecha: datos.fecha,
+                        hora: datos.hora,
+                        comentarios: datos.comentarios,
                         fecha_iso: fechaISO,
                         timestamp: new Date().toISOString()
                     };
 
-                    // Pabbly Connect Catch Webhook requiere un POST con JSON o Form Data
-                    // Usamos fetch con 'no-cors' pero sin headers complejos para evitar el preflight de CORS
+                    // Intento 1: Fetch estándar con formato URLSearchParams (evita CORS preflight)
+                    const formBody = new URLSearchParams();
+                    for (const key in data) {
+                        formBody.append(key, data[key]);
+                    }
+
                     fetch(PABBLY_WEBHOOK_URL, {
                         method: 'POST',
                         mode: 'no-cors',
-                        body: JSON.stringify(data)
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: formBody
+                    }).then(() => {
+                        if (DEBUG_MODE) console.log('🚀 Petición Webhook enviada a Pabbly');
                     }).catch(err => {
-                        console.warn('Fallback a Beacon...');
-                        navigator.sendBeacon(PABBLY_WEBHOOK_URL, JSON.stringify(data));
+                        console.warn('Fallback a Image Beacon...');
+                        const img = new Image();
+                        img.src = `${PABBLY_WEBHOOK_URL}?${formBody.toString()}`;
                     });
-                    
-                    if (DEBUG_MODE) console.log('🚀 Envío a Pabbly intentado (JSON stringified)');
                 }
 
                 // Enviar a Supabase (si está configurado)
