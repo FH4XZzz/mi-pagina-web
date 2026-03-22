@@ -678,7 +678,7 @@
                 location.reload();
             }
 
-            async function getCitas() {
+            async function getCitas(forceRefresh = false) {
                 if (ogSupabaseClient) {
                     const { data, error } = await ogSupabaseClient
                         .from('ogbeatproduction')
@@ -687,10 +687,15 @@
                     
                     if (!error) {
                         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                        if (DEBUG_MODE) console.log('🔄 Citas obtenidas de Supabase:', data.length);
                         return data;
+                    } else {
+                        console.error('❌ Error Supabase al obtener citas:', error);
                     }
                 }
-                return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+                const localData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+                if (DEBUG_MODE) console.log('📦 Citas obtenidas de LocalStorage:', localData.length);
+                return localData;
             }
 
             async function saveCitaToSupabase(cita) {
@@ -896,9 +901,9 @@
                             .single();
 
                         if (fetchError) throw fetchError;
-                        if (DEBUG_MODE) console.log('📦 Datos de cita obtenidos:', currentData);
+                        if (DEBUG_MODE) console.log('📦 Datos de la cita encontrados:', currentData);
 
-                        // 2. Actualizar estado en la base de datos
+                        // 2. Actualizar estado en Supabase
                         const { error: updateError } = await ogSupabaseClient
                             .from('ogbeatproduction')
                             .update({ estado: newStatus })
@@ -906,11 +911,21 @@
                         
                         if (updateError) throw updateError;
                         
-                        if (DEBUG_MODE) console.log('✅ Estado actualizado en Supabase');
+                        if (DEBUG_MODE) console.log('✅ Estado actualizado en Supabase exitosamente');
                         showToast(`Cita marcada como ${newStatus.toUpperCase()}`, 'success');
                         
-                        // 3. Forzar refresco de datos locales
-                        await refreshData();
+                        // 3. ACTUALIZACIÓN CRÍTICA: Limpiar caché local y forzar renderizado inmediato
+                        // Obtenemos los datos frescos de la DB
+                        const { data: freshData } = await ogSupabaseClient
+                            .from('ogbeatproduction')
+                            .select('*')
+                            .order('id', { ascending: false });
+                        
+                        if (freshData) {
+                            localStorage.setItem(STORAGE_KEY, JSON.stringify(freshData));
+                            await renderCitas(); // Volver a renderizar la tabla con los datos nuevos
+                            await updateStats(); // Actualizar contadores
+                        }
 
                         // 4. Acciones automáticas (WhatsApp)
                         if (currentData) {
@@ -928,10 +943,10 @@
                                 if (DEBUG_MODE) console.log('📱 Abriendo WhatsApp con mensaje:', mensaje);
                                 const waUrl = `https://wa.me/${currentData.telefono.replace(/\D/g,'')}?text=${encodeURIComponent(mensaje)}`;
                                 
-                                // Pequeño delay para asegurar que el DOM se actualizó antes de abrir WhatsApp
+                                // Delay para que el usuario vea el cambio en la lista antes de irse a WhatsApp
                                 setTimeout(() => {
                                     window.open(waUrl, '_blank');
-                                }, 100);
+                                }, 300);
                             }
                         }
                     } else {
@@ -940,7 +955,7 @@
                 } catch (e) {
                     console.error('❌ Error crítico en changeStatus:', e);
                     showToast('Error: no se pudo actualizar la cita', 'error');
-                    alert('Hubo un problema al sincronizar con la base de datos: ' + (e.message || 'Error desconocido'));
+                    alert('Error de sincronización: ' + (e.message || 'Error desconocido'));
                 } finally {
                     showLoading(false);
                 }
