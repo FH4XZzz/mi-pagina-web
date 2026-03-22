@@ -1208,7 +1208,22 @@
                 if (success) {
                     showToast('Guardado correctamente', 'success');
                     closeModal();
-                    await refreshData();
+                    
+                    // Actualizar cache local para inmediatez
+                    if (id) {
+                        const idx = citasCache.findIndex(c => String(c.id) === String(id));
+                        if (idx !== -1) citasCache[idx] = { ...citasCache[idx], ...nueva };
+                    } else {
+                        // Para nuevas, refreshData() las traerá con el ID real de Supabase
+                        await refreshData();
+                    }
+                    
+                    try {
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(citasCache));
+                    } catch (e) {}
+
+                    await renderCitas();
+                    await updateStats();
                 } else {
                     showToast('Error al sincronizar', 'error');
                 }
