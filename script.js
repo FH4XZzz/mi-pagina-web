@@ -19,7 +19,7 @@
 // 1. CONFIGURACIÓN Y VARIABLES GLOBALES
 // ==========================================
 
-const PABBLY_WEBHOOK_URL = ''; // PEGAR AQUÍ LA URL DE PABBLY CONNECT
+const PABBLY_WEBHOOK_URL = 'https://connect.pabbly.com/workflow/sendwebhookdata/IjU3NjcwNTZmMDYzMzA0MzQ1MjZiNTUzMDUxMzQi_pc'; // URL DE PABBLY CONNECT CONFIGURADA
 const SUPABASE_URL = 'https://jhsnlrarczlchcghtzqv.supabase.co'; 
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impoc25scmFyY3psY2hjZ2h0enF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NDYyNzgsImV4cCI6MjA4OTUyMjI3OH0.CXtbPIMBUBWgyLLjoU5PIY1eIaljVmHgvhJUQUe_9-E';
 let supabaseClient = null;
