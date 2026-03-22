@@ -113,9 +113,34 @@ body {
     padding: 0 20px;
 }
 
-/* ==========================================
-   NAVBAR
-   ========================================== */
+/* Estilos para ocultar los nombres de los días en Flatpickr */
+.flatpickr-weekdaycontainer {
+    display: none !important;
+}
+
+.flatpickr-weekdays {
+    display: none !important;
+}
+
+.flatpickr-calendar {
+    width: 100% !important;
+    max-width: 320px !important;
+    margin: 0 auto;
+}
+
+.flatpickr-days {
+    width: 100% !important;
+}
+
+.dayContainer {
+    width: 100% !important;
+    min-width: unset !important;
+    max-width: unset !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: space-around !important;
+}
+
 
 .navbar {
     position: fixed;

@@ -767,9 +767,15 @@ function configurarDisponibilidadFechas() {
             disableMobile: "true",
             clickOpens: true,
             allowInput: false,
-            static: false,
-            appendTo: document.body,
+            static: true,
             monthSelectorType: "static",
+            
+            onOpen: function(selectedDates, dateStr, instance) {
+                // Forzar que el teclado no aparezca en móviles
+                instance.input.blur();
+                instance.input.readOnly = true;
+                instance.input.setAttribute('inputmode', 'none');
+            },
             
             // Deshabilitar días ocupados
             disable: [
