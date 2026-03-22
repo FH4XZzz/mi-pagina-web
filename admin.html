@@ -929,13 +929,23 @@
                 return h.length >= 5 ? h.slice(0, 5) : h;
             }
 
+            function normalizarFecha(fecha) {
+                if (!fecha) return '';
+                // Si es DD/MM/YYYY lo convertimos a YYYY-MM-DD para Supabase
+                if (fecha.includes('/')) {
+                    const [d, m, y] = fecha.split('/');
+                    return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+                }
+                return fecha;
+            }
+
             async function resolverIdRealEnSupabase(citaLocal) {
                 if (!ogSupabaseClient || !citaLocal) return null;
 
                 const telNorm = normalizarTelefono(citaLocal.telefono);
                 const horaNorm = normalizarHora(citaLocal.hora);
                 const nombreNorm = String(citaLocal.nombre || '').trim().toLowerCase();
-                const fecha = citaLocal.fecha;
+                const fecha = normalizarFecha(citaLocal.fecha);
 
                 // 1) Candidatos por fecha (más eficiente)
                 if (fecha) {
