@@ -1675,40 +1675,53 @@ function initNavbarScroll() {
     const navbar = document.querySelector('.navbar');
     const logo = document.querySelector('.logo');
     let lastScrollTop = 0;
-    const threshold = 100; // Umbral de scroll inicial antes de ocultar
-    const delta = 10; // Sensibilidad del scroll para evitar cambios bruscos
+    const threshold = 150; // Umbral de scroll inicial (150px) antes de ocultar
+    const delta = 10; // Sensibilidad del scroll
+    let ticking = false;
 
-    // 1. Ocultar/Mostrar Navbar al hacer scroll
+    // 1. Lógica de Scroll con requestAnimationFrame para máximo rendimiento
     window.addEventListener('scroll', () => {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        if (!ticking) {
+            window.requestAnimationFrame(() => {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-        // Evitar activar el efecto en scroll muy pequeño o al inicio de la página
-        if (Math.abs(lastScrollTop - scrollTop) <= delta) return;
+                // Evitar activar si el cambio es menor al delta
+                if (Math.abs(lastScrollTop - scrollTop) <= delta) {
+                    ticking = false;
+                    return;
+                }
 
-        // Si el scroll es mayor al umbral
-        if (scrollTop > threshold) {
-            if (scrollTop > lastScrollTop) {
-                // Scroll hacia abajo - ocultar
-                navbar.classList.add('nav-up');
-            } else {
-                // Scroll hacia arriba - mostrar
-                navbar.classList.remove('nav-up');
-            }
-        } else if (scrollTop <= threshold) {
-            // Siempre mostrar si estamos cerca del top
-            navbar.classList.remove('nav-up');
+                // Lógica de ocultar/mostrar
+                if (scrollTop > threshold) {
+                    if (scrollTop > lastScrollTop) {
+                        // Scroll hacia abajo - ocultar
+                        navbar.classList.add('nav-up');
+                    } else {
+                        // Scroll hacia arriba - mostrar
+                        navbar.classList.remove('nav-up');
+                    }
+                } else {
+                    // Cerca del top, siempre mostrar
+                    navbar.classList.remove('nav-up');
+                }
+
+                lastScrollTop = scrollTop;
+                ticking = false;
+            });
+            ticking = true;
         }
-
-        lastScrollTop = scrollTop;
     }, { passive: true });
 
     // 2. Scroll suave al inicio al hacer clic en el logo
     if (logo) {
-        logo.addEventListener('click', () => {
+        logo.addEventListener('click', (e) => {
+            e.preventDefault();
             window.scrollTo({
                 top: 0,
                 behavior: 'smooth'
             });
+            // Asegurarse de mostrar el navbar si estaba oculto
+            navbar.classList.remove('nav-up');
         });
     }
 }

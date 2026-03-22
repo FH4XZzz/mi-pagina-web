@@ -131,12 +131,19 @@ body {
     align-items: center;
     z-index: 1000;
     box-shadow: var(--shadow-md);
-    transition: transform var(--transition-base); /* Añadido para el efecto de ocultar/mostrar */
+    transition: transform 0.4s ease-in-out; /* Transición más suave para iOS */
+    will-change: transform; /* Optimización para GPU */
 }
 
 /* Clase para ocultar el navbar al hacer scroll hacia abajo */
 .navbar.nav-up {
     transform: translateY(-100%);
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        height: calc(70px + env(safe-area-inset-top)); /* Altura un poco menor en móviles */
+    }
 }
 
 .nav-container {
