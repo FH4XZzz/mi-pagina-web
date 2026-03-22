@@ -125,7 +125,8 @@ body {
     background: rgba(10, 14, 39, 0.95);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--color-border);
-    height: 80px;
+    height: calc(80px + env(safe-area-inset-top)); /* Ajustado para notch */
+    padding-top: env(safe-area-inset-top); /* Espacio para la cámara/isla dinámica */
     display: flex;
     align-items: center;
     z-index: 1000;
