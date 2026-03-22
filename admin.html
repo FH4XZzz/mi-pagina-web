@@ -866,11 +866,12 @@
                     if (estadoFiltro === 'all') {
                         matchEstado = true;
                     } else {
-                        // Mapeo exacto: 'pendiente' -> 'pendiente', 'completada' -> 'completada' (o aprobada), 'cancelada' -> 'cancelada' (o rechazada)
+                        // Normalización exacta para que coincida con la imagen de Supabase (donde sale NULL o Pendiente)
+                        // estadoReal viene de r.Estado || 'pendiente'
                         if (estadoFiltro === 'pendiente') {
-                            matchEstado = (estadoReal === 'pendiente');
+                            matchEstado = (estadoReal === 'pendiente' || estadoReal === '' || !estadoReal);
                         } else if (estadoFiltro === 'completada') {
-                            matchEstado = (estadoReal === 'completada' || estadoReal === 'aprobada');
+                            matchEstado = (estadoReal === 'completada' || estadoReal === 'aprobada' || estadoReal === 'aceptada');
                         } else if (estadoFiltro === 'cancelada') {
                             matchEstado = (estadoReal === 'cancelada' || estadoReal === 'rechazada');
                         }
