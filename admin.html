@@ -600,7 +600,14 @@
 
             try {
                 if (window.supabase) {
-                    ogSupabaseClient = window.supabase.createClient(URL_DB, KEY_DB);
+                    // Configuración especial para evitar bloqueos de Tracking Prevention en iOS
+                    ogSupabaseClient = window.supabase.createClient(URL_DB, KEY_DB, {
+                        auth: {
+                            persistSession: false, // Deshabilitar persistencia automática que Safari bloquea
+                            autoRefreshToken: false,
+                            detectSessionInUrl: false
+                        }
+                    });
                 }
             } catch (e) {
                 console.error('Error inicializando Supabase:', e);
@@ -802,39 +809,51 @@
             }
 
             async function renderCitas() {
-                const citas = await getCitas();
+                // Forzar obtención de datos frescos antes de renderizar
+                const citas = await getCitas(true);
                 const body = document.getElementById('citas-body');
                 const searchInput = document.getElementById('search');
                 const search = searchInput ? searchInput.value.toLowerCase() : '';
-                const estadoFiltro = currentFilter; // Usar el filtro global
+                
+                // IMPORTANTE: Asegurarnos de que el filtro actual se aplique correctamente
+                const selectEstado = document.getElementById('filter-estado');
+                const estadoFiltro = selectEstado ? selectEstado.value : currentFilter; 
+                
+                if (DEBUG_MODE) console.log(`🎨 Renderizando con filtro: ${estadoFiltro}`);
+
                 const desde = document.getElementById('filter-desde').value;
                 const hasta = document.getElementById('filter-hasta').value;
 
-                let filtered = citas.sort((a, b) => {
+                let filtered = [...citas].sort((a, b) => {
                     const d1 = new Date(a.fecha + 'T' + a.hora);
                     const d2 = new Date(b.fecha + 'T' + b.hora);
                     return d2 - d1;
                 });
 
                 filtered = filtered.filter(c => {
-                    const nombre = c.nombre || '';
+                    const nombre = (c.nombre || '').toLowerCase();
                     const tel = c.telefono || '';
-                    const estado = c.estado || 'pendiente';
+                    const estado = (c.estado || 'pendiente').toLowerCase();
                     
-                    const matchSearch = nombre.toLowerCase().includes(search) || tel.includes(search);
+                    const matchSearch = nombre.includes(search) || tel.includes(search);
                     
-                    // Lógica de filtrado estricta para que desaparezcan de 'pendientes'
+                    // Filtrado estricto por estado
                     let matchEstado = false;
                     if (estadoFiltro === 'all') {
                         matchEstado = true;
                     } else {
-                        matchEstado = (estado === estadoFiltro);
+                        // Mapeo de estados para coincidir con el filtro
+                        const estadoNormalizado = estado === 'completada' ? 'completada' : (estado === 'cancelada' ? 'cancelada' : 'pendiente');
+                        matchEstado = (estadoNormalizado === estadoFiltro);
                     }
 
                     const matchDesde = !desde || c.fecha >= desde;
                     const matchHasta = !hasta || c.fecha <= hasta;
+                    
                     return matchSearch && matchEstado && matchDesde && matchHasta;
                 });
+
+                if (DEBUG_MODE) console.log(`📊 Citas filtradas a mostrar: ${filtered.length}`);
 
                 body.innerHTML = '';
                 filtered.forEach(c => {
