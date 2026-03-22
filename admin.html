@@ -693,7 +693,7 @@
 
                 if (ogSupabaseClient) {
                     const { data, error } = await ogSupabaseClient
-                        .from('Producción Ogbeat')
+                        .from('ogbeatproduction')
                         .select('*')
                         .order('id', { ascending: false });
                     
@@ -702,13 +702,13 @@
                         citasCache = data.map(r => ({
                             id: r.id,
                             nombre: r.nombre,
-                            email: r["Correo electrónico"],
-                            telefono: r.teléfono,
-                            servicio: r.Servicio,
+                            email: r.email,
+                            telefono: r.telefono,
+                            servicio: r.servicio,
                             fecha: r.fecha,
                             hora: r.hora,
-                            notas: r.Comentarios,
-                            estado: r.Estado || 'pendiente'
+                            notas: r.comentarios,
+                            estado: r.estado || 'pendiente'
                         }));
 
                         try {
@@ -739,24 +739,24 @@
                 
                 const payload = {
                     nombre: cita.nombre,
-                    "Correo electrónico": cita.email || '',
-                    teléfono: cita.telefono,
-                    Servicio: cita.servicio,
+                    email: cita.email || '',
+                    telefono: cita.telefono,
+                    servicio: cita.servicio,
                     fecha: cita.fecha,
                     hora: cita.hora,
-                    Comentarios: cita.notas || '',
-                    Estado: cita.estado || 'pendiente'
+                    comentarios: cita.notas || '',
+                    estado: cita.estado || 'pendiente'
                 };
 
                 if (cita.id && !isNaN(cita.id) && String(cita.id).length < 10) {
                     const { error } = await ogSupabaseClient
-                        .from('Producción Ogbeat')
+                        .from('ogbeatproduction')
                         .update(payload)
                         .eq('id', cita.id);
                     return !error;
                 } else {
                     const { error } = await ogSupabaseClient
-                        .from('Producción Ogbeat')
+                        .from('ogbeatproduction')
                         .insert([payload]);
                     return !error;
                 }
@@ -957,15 +957,15 @@
                 // 1) Candidatos por fecha (más eficiente)
                 if (fecha) {
                     const { data: candidatesByDate, error: dateError } = await ogSupabaseClient
-                        .from('Producción Ogbeat')
-                        .select('id, nombre, teléfono, fecha, hora, Estado')
+                        .from('ogbeatproduction')
+                        .select('id, nombre, telefono, fecha, hora, estado')
                         .eq('fecha', fecha)
                         .order('id', { ascending: false })
                         .limit(50);
 
                     if (!dateError && Array.isArray(candidatesByDate) && candidatesByDate.length > 0) {
                         const match = candidatesByDate.find(r => {
-                            const rTel = normalizarTelefono(r.teléfono);
+                            const rTel = normalizarTelefono(r.telefono);
                             const rHora = normalizarHora(r.hora);
                             const rNombre = String(r.nombre || '').trim().toLowerCase();
                             const telOk = telNorm && rTel && rTel.endsWith(telNorm);
@@ -979,15 +979,15 @@
 
                 // 2) Fallback: revisar últimos registros (por si la fecha guardada no coincide o está en otro formato)
                 const { data: candidates, error } = await ogSupabaseClient
-                    .from('Producción Ogbeat')
-                    .select('id, nombre, teléfono, fecha, hora, Estado')
+                    .from('ogbeatproduction')
+                    .select('id, nombre, telefono, fecha, hora, estado')
                     .order('id', { ascending: false })
                     .limit(200);
 
                 if (error || !Array.isArray(candidates) || candidates.length === 0) return null;
 
                 const match = candidates.find(r => {
-                    const rTel = normalizarTelefono(r.teléfono);
+                    const rTel = normalizarTelefono(r.telefono);
                     const rHora = normalizarHora(r.hora);
                     const rNombre = String(r.nombre || '').trim().toLowerCase();
                     const telOk = telNorm && rTel && (rTel === telNorm || rTel.endsWith(telNorm));
@@ -1012,10 +1012,10 @@
 
                     // 1) Update con confirmación de fila afectada
                     let { data: updatedRows, error: updateError } = await ogSupabaseClient
-                        .from('Producción Ogbeat')
-                        .update({ Estado: newStatus })
+                        .from('ogbeatproduction')
+                        .update({ estado: newStatus })
                         .eq('id', citaId)
-                        .select('id, Estado, nombre, teléfono, fecha, hora')
+                        .select('id, estado, nombre, telefono, fecha, hora')
                         .limit(1);
 
                     // Fallback: si el ID no coincide (por ejemplo viene de localStorage),
@@ -1027,10 +1027,10 @@
                             const realId = await resolverIdRealEnSupabase(local);
                             if (realId) {
                                 ({ data: updatedRows, error: updateError } = await ogSupabaseClient
-                                    .from('Producción Ogbeat')
-                                    .update({ Estado: newStatus })
+                                    .from('ogbeatproduction')
+                                    .update({ estado: newStatus })
                                     .eq('id', realId)
-                                    .select('id, Estado, nombre, teléfono, fecha, hora')
+                                    .select('id, estado, nombre, telefono, fecha, hora')
                                     .limit(1));
                             }
                         }
@@ -1044,9 +1044,9 @@
                     const updatedRaw = updatedRows[0];
                     const updated = {
                         id: updatedRaw.id,
-                        estado: updatedRaw.Estado,
+                        estado: updatedRaw.estado,
                         nombre: updatedRaw.nombre,
-                        telefono: updatedRaw.teléfono,
+                        telefono: updatedRaw.telefono,
                         fecha: updatedRaw.fecha,
                         hora: updatedRaw.hora
                     };
@@ -1105,7 +1105,7 @@
                     if (!ogSupabaseClient) throw new Error('Supabase client no inicializado');
 
                     let { data: deletedRows, error } = await ogSupabaseClient
-                        .from('Producción Ogbeat')
+                        .from('ogbeatproduction')
                         .delete()
                         .eq('id', citaId)
                         .select('id')
@@ -1119,7 +1119,7 @@
                             const realId = await resolverIdRealEnSupabase(local);
                             if (realId) {
                                 ({ data: deletedRows, error } = await ogSupabaseClient
-                                    .from('Producción Ogbeat')
+                                    .from('ogbeatproduction')
                                     .delete()
                                     .eq('id', realId)
                                     .select('id')
