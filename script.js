@@ -19,6 +19,7 @@
 // 1. CONFIGURACIÓN Y VARIABLES GLOBALES
 // ==========================================
 
+const PABBLY_WEBHOOK_URL = ''; // PEGAR AQUÍ LA URL DE PABBLY CONNECT
 const SUPABASE_URL = 'https://jhsnlrarczlchcghtzqv.supabase.co'; 
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impoc25scmFyY3psY2hjZ2h0enF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NDYyNzgsImV4cCI6MjA4OTUyMjI3OH0.CXtbPIMBUBWgyLLjoU5PIY1eIaljVmHgvhJUQUe_9-E';
 let supabaseClient = null;
@@ -447,6 +448,22 @@ function initFormValidation() {
 
                 const fechaISO = parsearFechaFlatpickr(datos.fecha);
                 if (!fechaISO) throw new Error('Fecha inválida');
+
+                // Enviar a Pabbly Connect (Webhook) para recordatorios de WhatsApp
+                if (PABBLY_WEBHOOK_URL) {
+                    fetch(PABBLY_WEBHOOK_URL, {
+                        method: 'POST',
+                        mode: 'no-cors', // Para evitar problemas de CORS con webhooks simples
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            ...datos,
+                            fecha_iso: fechaISO,
+                            timestamp: new Date().toISOString()
+                        })
+                    }).catch(err => console.warn('Error enviando a Pabbly:', err));
+                }
 
                 // Enviar a Supabase (si está configurado)
                 if (window.supabaseInstance) {
