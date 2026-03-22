@@ -117,6 +117,12 @@ body {
     align-items: center;
     z-index: 1000;
     box-shadow: var(--shadow-md);
+    transition: transform var(--transition-base); /* Añadido para el efecto de ocultar/mostrar */
+}
+
+/* Clase para ocultar el navbar al hacer scroll hacia abajo */
+.navbar.nav-up {
+    transform: translateY(-100%);
 }
 
 .nav-container {
@@ -141,6 +147,7 @@ body {
     letter-spacing: 2px;
     text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
     transition: all var(--transition-fast);
+    cursor: pointer; /* Añadido para indicar que es clickeable */
 }
 
 .logo:hover {

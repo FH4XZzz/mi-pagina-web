@@ -1649,70 +1649,65 @@ if (DEBUG_MODE) {
 // 11. GESTIÓN DE IMÁGENES DE SERVICIOS
 // ==========================================
 
-// Inicializar Supabase al final para asegurar que el SDK esté cargado
-try {
-    if (typeof window.supabase !== 'undefined') {
-        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-            auth: {
-                persistSession: false,
-                autoRefreshToken: false,
-                detectSessionInUrl: false
-            }
-        });
-        console.log('⚡ Supabase inicializado correctamente');
-    }
-} catch (e) {
-    console.error('❌ Error al inicializar Supabase:', e);
-}
+// ==========================================
+// 13. FUNCIONALIDAD DEL NAVBAR (SCROLL & LOGO)
+// ==========================================
 
 /**
- * Analiza las tarjetas de servicios e inyecta fotos correspondientes automáticamente
+ * Controla el comportamiento del navbar al hacer scroll:
+ * - Oculta al bajar, muestra al subir.
+ * - Scroll suave al inicio al hacer clic en el logo.
  */
-function initServiceImages() {
-    const cards = document.querySelectorAll('.servicio-card');
-    
-    // URLs de imágenes profesionales (Unsplash) para cada categoría
-    const imagenes = {
-        'grabacion': 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=600&auto=format&fit=crop', // Micrófono de estudio
-        'mezcla': 'https://images.unsplash.com/photo-1598653222000-6b7b7a552625?q=80&w=600&auto=format&fit=crop',    // Consola de mezcla
-        'beats': 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=600&auto=format&fit=crop',     // Producción/Synth
-        'default': 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?q=80&w=600&auto=format&fit=crop'    // Estudio general
-    };
+function initNavbarScroll() {
+    const navbar = document.querySelector('.navbar');
+    const logo = document.querySelector('.logo');
+    let lastScrollTop = 0;
+    const threshold = 100; // Umbral de scroll inicial antes de ocultar
+    const delta = 10; // Sensibilidad del scroll para evitar cambios bruscos
 
-    cards.forEach(card => {
-        // Evitar duplicar si ya tiene imagen
-        if (card.querySelector('.servicio-img-wrapper')) return;
+    // 1. Ocultar/Mostrar Navbar al hacer scroll
+    window.addEventListener('scroll', () => {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-        // Analizar el título para determinar la categoría
-        const titulo = card.querySelector('h3');
-        const texto = titulo ? titulo.textContent.toLowerCase() : '';
-        let imgUrl = imagenes.default;
+        // Evitar activar el efecto en scroll muy pequeño o al inicio de la página
+        if (Math.abs(lastScrollTop - scrollTop) <= delta) return;
 
-        if (texto.includes('grabación') || texto.includes('rec') || texto.includes('voz')) {
-            imgUrl = imagenes.grabacion;
-        } else if (texto.includes('mezcla') || texto.includes('master') || texto.includes('mix')) {
-            imgUrl = imagenes.mezcla;
-        } else if (texto.includes('beat') || texto.includes('prod') || texto.includes('instrumental')) {
-            imgUrl = imagenes.beats;
+        // Si el scroll es mayor al umbral
+        if (scrollTop > threshold) {
+            if (scrollTop > lastScrollTop) {
+                // Scroll hacia abajo - ocultar
+                navbar.classList.add('nav-up');
+            } else {
+                // Scroll hacia arriba - mostrar
+                navbar.classList.remove('nav-up');
+            }
+        } else if (scrollTop <= threshold) {
+            // Siempre mostrar si estamos cerca del top
+            navbar.classList.remove('nav-up');
         }
 
-        // Crear contenedor de imagen con estilos integrados
-        const imgWrapper = document.createElement('div');
-        imgWrapper.className = 'servicio-img-wrapper';
-        imgWrapper.style.cssText = 'width: 100%; height: 160px; overflow: hidden; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);';
-        
-        const img = document.createElement('img');
-        img.src = imgUrl;
-        img.style.cssText = 'width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;';
-        
-        // Efecto Zoom al pasar el mouse
-        card.addEventListener('mouseenter', () => img.style.transform = 'scale(1.1)');
-        card.addEventListener('mouseleave', () => img.style.transform = 'scale(1.0)');
+        lastScrollTop = scrollTop;
+    }, { passive: true });
 
-        imgWrapper.appendChild(img);
-        card.insertBefore(imgWrapper, card.firstChild);
-    });
+    // 2. Scroll suave al inicio al hacer clic en el logo
+    if (logo) {
+        logo.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
 }
+
+// Inicializar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => {
+    initNavbarScroll();
+    initServiceImages(); // Mantener la inicialización de imágenes que ya existía
+    
+    // Cargar datos si existen
+    SISTEMA_DISPONIBILIDAD.cargarDelLocalStorage();
+});
 
 /**
  * FUNCIÓN DE EJEMPLO: Agrega una reserva de demostración para MAÑANA a las 8 AM
