@@ -1240,11 +1240,11 @@ function mostrarConfirmacion(form) {
     
     // Enviar mensaje a WhatsApp avisando que es una SOLICITUD PENDIENTE
     const mensajeWA = construirMensajeWhatsApp(reserva);
-    // Cambiar a la URL universal de WhatsApp para mejor compatibilidad en iPhone
-    const urlWA = `https://api.whatsapp.com/send?phone=18297694405&text=${encodeURIComponent(mensajeWA)}`;
+    // Cambiar a la URL de WhatsApp Web/App más compatible
+    const urlWA = `https://wa.me/18297694405?text=${encodeURIComponent(mensajeWA)}`;
     
-    // Intentar abrir WhatsApp inmediatamente
-    window.location.href = urlWA;
+    // Abrir en una nueva ventana para evitar que el navegador bloquee la redirección
+    window.open(urlWA, '_blank');
 
     // Log de datos (solo en modo debug)
     if (DEBUG_MODE) {
