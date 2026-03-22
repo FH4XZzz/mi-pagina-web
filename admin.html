@@ -911,7 +911,7 @@
                 if (!id) return;
                 
                 showLoading(true);
-                if (DEBUG_MODE) console.log(`� Solicitando cambio a "${newStatus}" para ID: ${id}`);
+                if (DEBUG_MODE) console.log(`🚀 Solicitando cambio a "${newStatus}" para ID: ${id}`);
                 
                 try {
                     if (ogSupabaseClient) {
@@ -925,6 +925,7 @@
                         if (fetchError) throw fetchError;
 
                         // 2. Actualizar estado REAL en la base de datos
+                        // Normalizamos el estado para Supabase (completada o cancelada)
                         const { error: updateError } = await ogSupabaseClient
                             .from('ogbeatproduction')
                             .update({ estado: newStatus })
@@ -934,8 +935,10 @@
                         
                         showToast(`Cita ${newStatus === 'completada' ? 'APROBADA' : 'CANCELADA'}`, 'success');
                         
-                        // 3. LIMPIEZA TOTAL DE CACHÉ Y RE-RENDER
+                        // 3. LIMPIEZA TOTAL DE CACHÉ Y RE-RENDER INMEDIATO
                         localStorage.removeItem(STORAGE_KEY); 
+                        
+                        // Forzamos actualización visual inmediata eliminando del DOM o re-renderizando
                         await refreshData(); 
 
                         // 4. Acciones automáticas (WhatsApp)
@@ -952,7 +955,10 @@
 
                             if (mensaje) {
                                 const waUrl = `https://wa.me/${currentData.telefono.replace(/\D/g,'')}?text=${encodeURIComponent(mensaje)}`;
-                                setTimeout(() => window.open(waUrl, '_blank'), 400);
+                                // Abrir WhatsApp después de un delay mayor para asegurar que el usuario vea que la cita se movió
+                                setTimeout(() => {
+                                    window.open(waUrl, '_blank');
+                                }, 600);
                             }
                         }
                     }
