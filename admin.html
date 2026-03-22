@@ -931,12 +931,39 @@
                     if (!ogSupabaseClient) throw new Error('Supabase client no inicializado');
 
                     // 1) Update con confirmación de fila afectada
-                    const { data: updatedRows, error: updateError } = await ogSupabaseClient
+                    let { data: updatedRows, error: updateError } = await ogSupabaseClient
                         .from('ogbeatproduction')
                         .update({ estado: newStatus })
                         .eq('id', citaId)
                         .select('id, estado, nombre, telefono, fecha, hora')
                         .limit(1);
+
+                    // Fallback: si el ID no coincide (por ejemplo viene de localStorage),
+                    // intentamos resolver el id real en DB por telefono+fecha+hora.
+                    if (!updateError && (!updatedRows || updatedRows.length === 0)) {
+                        const local = citasCache.find(c => String(c.id) === String(id));
+                        if (local && local.telefono && local.fecha && local.hora) {
+                            if (DEBUG_MODE) console.warn('⚠️ ID no coincide. Buscando cita real en Supabase por telefono+fecha+hora...');
+                            const { data: foundRows, error: findError } = await ogSupabaseClient
+                                .from('ogbeatproduction')
+                                .select('id, estado, nombre, telefono, fecha, hora')
+                                .eq('telefono', local.telefono)
+                                .eq('fecha', local.fecha)
+                                .eq('hora', local.hora)
+                                .order('id', { ascending: false })
+                                .limit(1);
+
+                            if (!findError && foundRows && foundRows.length > 0) {
+                                const realId = foundRows[0].id;
+                                ({ data: updatedRows, error: updateError } = await ogSupabaseClient
+                                    .from('ogbeatproduction')
+                                    .update({ estado: newStatus })
+                                    .eq('id', realId)
+                                    .select('id, estado, nombre, telefono, fecha, hora')
+                                    .limit(1));
+                            }
+                        }
+                    }
 
                     if (updateError) throw updateError;
                     if (!updatedRows || updatedRows.length === 0) {
@@ -998,12 +1025,38 @@
                 try {
                     if (!ogSupabaseClient) throw new Error('Supabase client no inicializado');
 
-                    const { data: deletedRows, error } = await ogSupabaseClient
+                    let { data: deletedRows, error } = await ogSupabaseClient
                         .from('ogbeatproduction')
                         .delete()
                         .eq('id', citaId)
                         .select('id')
                         .limit(1);
+
+                    // Fallback si ID no coincide
+                    if (!error && (!deletedRows || deletedRows.length === 0)) {
+                        const local = citasCache.find(c => String(c.id) === String(id));
+                        if (local && local.telefono && local.fecha && local.hora) {
+                            if (DEBUG_MODE) console.warn('⚠️ ID no coincide. Buscando cita real en Supabase para eliminar por telefono+fecha+hora...');
+                            const { data: foundRows, error: findError } = await ogSupabaseClient
+                                .from('ogbeatproduction')
+                                .select('id')
+                                .eq('telefono', local.telefono)
+                                .eq('fecha', local.fecha)
+                                .eq('hora', local.hora)
+                                .order('id', { ascending: false })
+                                .limit(1);
+
+                            if (!findError && foundRows && foundRows.length > 0) {
+                                const realId = foundRows[0].id;
+                                ({ data: deletedRows, error } = await ogSupabaseClient
+                                    .from('ogbeatproduction')
+                                    .delete()
+                                    .eq('id', realId)
+                                    .select('id')
+                                    .limit(1));
+                            }
+                        }
+                    }
 
                     if (error) throw error;
                     if (!deletedRows || deletedRows.length === 0) {
