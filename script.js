@@ -451,19 +451,19 @@ function initFormValidation() {
 
                 // Enviar a Pabbly Connect (Webhook) para recordatorios de WhatsApp
                 if (PABBLY_WEBHOOK_URL) {
-                    // Usar un formulario real para evitar problemas de CORS con Pabbly
-                    const formData = new FormData();
-                    Object.keys(datos).forEach(key => formData.append(key, datos[key]));
-                    formData.append('fecha_iso', fechaISO);
-                    formData.append('timestamp', new Date().toISOString());
+                    // Usar una URL con parámetros de consulta para máxima compatibilidad con Pabbly
+                    const params = new URLSearchParams();
+                    Object.keys(datos).forEach(key => params.append(key, datos[key]));
+                    params.append('fecha_iso', fechaISO);
+                    params.append('timestamp', new Date().toISOString());
 
-                    fetch(PABBLY_WEBHOOK_URL, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        body: formData
-                    }).then(() => {
-                        if (DEBUG_MODE) console.log('✅ Datos enviados a Pabbly correctamente');
-                    }).catch(err => console.warn('❌ Error enviando a Pabbly:', err));
+                    const webhookWithParams = `${PABBLY_WEBHOOK_URL}?${params.toString()}`;
+                    
+                    // Crear un elemento <img> invisible para disparar el webhook sin problemas de CORS
+                    const img = new Image();
+                    img.src = webhookWithParams;
+                    
+                    if (DEBUG_MODE) console.log('🚀 Webhook disparado via Image Beacon');
                 }
 
                 // Enviar a Supabase (si está configurado)
